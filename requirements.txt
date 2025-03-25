@@ -1,0 +1,10 @@
+numpy
+pandas
+netcdf4
+xarray
+scipy
+setuptools
+matplotlib
+pyyaml
+tqdm
+seawater
