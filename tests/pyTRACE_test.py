@@ -1,5 +1,5 @@
 import pytest  
-import pyTRACE
+from pyTRACE import main
 
 def dummy_test():
   assert 1 == 1
