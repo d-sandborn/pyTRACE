@@ -22,7 +22,7 @@ from pyTRACE.utils import (
 # MATLAB code into Python.
 
 
-def TRACE(
+def trace(
     output_coordinates,
     dates,
     predictor_measurements,
