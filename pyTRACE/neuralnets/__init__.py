@@ -129,6 +129,7 @@ def trace_nn(
         or depth.
 
     """
+    package_dir = os.path.dirname(__file__)
     equations = equation_check(equations)
     per_kg_sw_tf = units_check(per_kg_sw_tf)
     meas_uncerts, input_u, use_default_uncertainties = uncerts_check(
@@ -404,11 +405,11 @@ def mapminmax_reverse(y, settings={}):
     return x
 
 
-def execute_nn(X, VName, Location, Equation, Net, verbose_tf=True):
+def execute_nn(X, VName, Location, Equation, Net, package_dir, verbose_tf=True):
     """Execute neural network by calling pickle file with weights
     determined using MATLAB machine learning routines, followed by
     linear algebra replicating neural network architecture exactly."""
-    with open("./pyTRACE/nn_params.pkl", "rb") as f:
+    with open(package_dir + "nn_params.pkl", "rb") as f:
         dill = pickle.load(f)
     if VName == "Temperature":
         VName = "EstT_Temperature"

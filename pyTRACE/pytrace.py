@@ -3,6 +3,7 @@ import pandas as pd
 from scipy.stats import invgauss
 from scipy.interpolate import interp1d
 import warnings
+from os import path
 from seawater import satO2, ptmp, dens, pres  # TODO replace with gsw
 import xarray as xr
 from pyTRACE.neuralnets import trace_nn
@@ -16,6 +17,7 @@ from pyTRACE.utils import (
     coordinate_check,
     prepare_uncertainties,
     inverse_gaussian_wrapper,
+    say_hello,
 )
 
 
@@ -140,6 +142,7 @@ def trace(
         Canth, preformed properties, and associated metadata.
 
     """
+    package_dir = path.dirname(__file__)
     equations = equation_check(equations)
     per_kg_sw_tf = units_check(per_kg_sw_tf)
     preindustrial_xco2 = preindustrial_check(preindustrial_xco2)
@@ -237,7 +240,7 @@ def trace(
     # value. "Adjusted" can be deleted in the following line to use the
     # original atmospheric values.  If this approach is used, then users should
     # consider altering CanthDiseq below to modulate the degree of equilibrium.
-    co2_rec = np.loadtxt("./pyTRACE/CO2TrajectoriesAdjusted.txt")
+    co2_rec = np.loadtxt(package_dir + "CO2TrajectoriesAdjusted.txt")
     co2_rec = np.vstack([co2_rec[0, :], co2_rec])
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
 
