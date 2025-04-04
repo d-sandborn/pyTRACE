@@ -5,7 +5,7 @@ from scipy.interpolate import interp1d
 import warnings
 from seawater import satO2, ptmp, dens, pres
 import xarray as xr
-from combined_nn import trace_nn
+from neuralnets import trace_nn
 import PyCO2SYS as pyco2
 from utils import (
     equation_check,
