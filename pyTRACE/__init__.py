@@ -1,1 +1,1 @@
-from pyTRACE.pytrace import PyTRACE #this is awful
+from pyTRACE.pytrace import trace #this is awful
