@@ -203,6 +203,7 @@ def trace(
             output_coordinates,
             predictor_measurements[:, predictor_types == 1],
             np.array([1]),
+            package_dir,
             verbose_tf=verbose_tf,
         )
         predictor_measurements = np.hstack(
@@ -225,13 +226,20 @@ def trace(
     if verbose_tf:
         print("\nEstimating preformed properties.")
     pref_props_sub = trace_nn(
-        [1, 2, 4], C, m_all, np.array([1, 2]), verbose_tf=verbose_tf
+        [1, 2, 4],
+        C,
+        m_all,
+        np.array([1, 2]),
+        package_dir,
+        verbose_tf=verbose_tf,
     )
 
     # Remap the scale factors using another neural network
     if verbose_tf:
         print("\nEstimating scale factors.")
-    sfs = trace_nn([6], C, m_all, np.array([1, 2]), verbose_tf=verbose_tf)
+    sfs = trace_nn(
+        [6], C, m_all, np.array([1, 2]), package_dir, verbose_tf=verbose_tf
+    )
 
     # Load CO2 history
     # Note, this history has been modified to
@@ -240,7 +248,7 @@ def trace(
     # value. "Adjusted" can be deleted in the following line to use the
     # original atmospheric values.  If this approach is used, then users should
     # consider altering CanthDiseq below to modulate the degree of equilibrium.
-    co2_rec = np.loadtxt(package_dir + "CO2TrajectoriesAdjusted.txt")
+    co2_rec = np.loadtxt(package_dir + "/CO2TrajectoriesAdjusted.txt")
     co2_rec = np.vstack([co2_rec[0, :], co2_rec])
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
 

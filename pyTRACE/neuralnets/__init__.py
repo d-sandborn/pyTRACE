@@ -29,6 +29,7 @@ def trace_nn(
     output_coordinates,
     predictor_measurements,
     predictor_types,
+    package_dir,
     equations=[],
     meas_uncerts=None,
     error_codes=[-999, -9, -1e20],
@@ -129,7 +130,7 @@ def trace_nn(
         or depth.
 
     """
-    package_dir = os.path.dirname(__file__)
+    # package_dir = os.path.dirname(__file__)
     equations = equation_check(equations)
     per_kg_sw_tf = units_check(per_kg_sw_tf)
     meas_uncerts, input_u, use_default_uncertainties = uncerts_check(
@@ -275,10 +276,22 @@ def trace_nn(
                 # Separate neural networks are used for the Arctic/Atlantic and
                 # the rest of the ocean.
                 est_other[:, Net - 1] = execute_nn(
-                    P, VName, "Other", Equation, Net, verbose_tf=verbose_tf
+                    P,
+                    VName,
+                    "Other",
+                    Equation,
+                    Net,
+                    package_dir,
+                    verbose_tf=verbose_tf,
                 )
                 est_atl[:, Net - 1] = execute_nn(
-                    P, VName, "Atl", Equation, Net, verbose_tf=verbose_tf
+                    P,
+                    VName,
+                    "Atl",
+                    Equation,
+                    Net,
+                    package_dir,
+                    verbose_tf=verbose_tf,
                 )
 
                 # est_atl[:, eq, Net] = function_atl(P.T).T
@@ -409,7 +422,7 @@ def execute_nn(X, VName, Location, Equation, Net, package_dir, verbose_tf=True):
     """Execute neural network by calling pickle file with weights
     determined using MATLAB machine learning routines, followed by
     linear algebra replicating neural network architecture exactly."""
-    with open(package_dir + "nn_params.pkl", "rb") as f:
+    with open(package_dir + "/nn_params.pkl", "rb") as f:
         dill = pickle.load(f)
     if VName == "Temperature":
         VName = "EstT_Temperature"
