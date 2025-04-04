@@ -1,8 +1,11 @@
 # pyTRACE
 
 Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) converted to Python.
+
 After https://github.com/BRCScienceProducts/TRACEv1
+
 Please reference the manuscript for TRACEv1 (in print) for further details.
+
 pyTRACE version 0.0.1 (pre-alpha)
 
 This code generates estimates of ocean anthropogenic carbon content from user-supplied inputs of coordinates (lat, lon, depth), salinity, temperature, and date. Information is also needed about the historical and/or future CO<sub>2</sub> trajectory.  This information can be provided or default values can be assumed.  
