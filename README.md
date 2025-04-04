@@ -22,13 +22,13 @@ Additionally, PyCO2SYS > v2 is required for speed and stability purposes. Please
 Call pyTRACE within Python by running 
 
 ```
-from pyTRACE.main import pyTRACE
+from pyTRACE import trace
 ```
 
-Which will make available the top-level function anthropogenic carbon estimation. For details on its input and output parameters, run
+Which will make available the top-level function for anthropogenic carbon estimation. For details on its input and output parameters, run
 
 ```
-?pyTRACE
+?trace
 ```
 
 ## Disclaimer
