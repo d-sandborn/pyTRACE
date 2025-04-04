@@ -18,9 +18,6 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
 )
 
-# This function replicates the functionality of TRACEv1, translating the
-# MATLAB code into Python.
-
 
 def trace(
     output_coordinates,
@@ -206,13 +203,15 @@ def trace(
     dates = dates[valid_indices]
 
     # Estimate preformed properties using a neural network
-    print("\nEstimating preformed properties.")
+    if verbose_tf:
+        print("\nEstimating preformed properties.")
     pref_props_sub = trace_nn(
         [1, 2, 4], C, m_all, np.array([1, 2]), verbose_tf=verbose_tf
     )
 
     # Remap the scale factors using another neural network
-    print("\nEstimating scale factors.")
+    if verbose_tf:
+        print("\nEstimating scale factors.")
     sfs = trace_nn([6], C, m_all, np.array([1, 2]), verbose_tf=verbose_tf)
 
     # Load CO2 history
@@ -222,7 +221,7 @@ def trace(
     # value. "Adjusted" can be deleted in the following line to use the
     # original atmospheric values.  If this approach is used, then users should
     # consider altering CanthDiseq below to modulate the degree of equilibrium.
-    co2_rec = np.loadtxt("CO2TrajectoriesAdjusted.txt")
+    co2_rec = np.loadtxt("./pyTRACE/CO2TrajectoriesAdjusted.txt")
     co2_rec = np.vstack([co2_rec[0, :], co2_rec])
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
 
@@ -259,7 +258,8 @@ def trace(
     # trajectories, which is default).
 
     # Calculate equilibrium DIC with and without anthropogenic CO2
-    print("\nInitializing PyCO2SYS calculation.")
+    if verbose_tf:
+        print("\nInitializing PyCO2SYS calculation.")
     out = pyco2.sys(
         alkalinity=pref_props_sub["Preformed_TA"],
         pCO2=vpfac * (canth_diseq * (co2_set.T - 280) + 280),
@@ -316,5 +316,6 @@ def trace(
         attrs=dict(description="pyTRACE output"),
     )
     # Return results
-    print("pyTRACE completed.")
+    if verbose_tf:
+        print("\npyTRACE completed.")
     return output

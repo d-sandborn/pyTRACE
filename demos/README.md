@@ -1,3 +1,3 @@
 #Examples
 
-Example scripts and ntoebooks will go here.
+Example scripts and notebooks can be found here.

@@ -8,10 +8,9 @@ import warnings
 from tqdm import tqdm
 import os
 from scipy import io
-from utils import inpolygon
 import pickle
 
-from utils import (
+from pyTRACE.utils import (
     equation_check,
     units_check,
     preindustrial_check,
@@ -20,6 +19,7 @@ from utils import (
     coordinate_check,
     prepare_uncertainties,
     inverse_gaussian_wrapper,
+    inpolygon
 )
 from seawater import satO2, ptmp, dens, pres
 
@@ -274,12 +274,12 @@ def trace_nn(
                     "A property identifier >8 or <1 was supplied, but this routine only has 2 possible property estimates.  The property identifier is the first input."
                 )
         # Loading the data, with an error message if not found
-        fn = "Polys.mat"
+        fn = "./pyTRACE/Polys.mat"
         # Making sure you downloaded the needed file and put it somewhere it
         # can be found
-        if not os.path.isfile(fn):  # MATLAB: if exist(FN,'file')<2;
+        if not os.path.isfile(fn):  
             raise FileNotFoundError(
-                "ESPER_LIR could not find the file(s) needed to run.  These mandatory file(s) should be distributed from the same website as ESPER_LIR.  Contact the corresponding author if you cannot find it there.  If you do have it then make sure all of the contents of the ESPER.zip extract are on the MATLAB path or in the active directory.  This will require adding several subfolders for ESPER."
+                "TRACE could not find Polys.mat.  These mandatory file(s) should be distributed from the same website as TRACE.  Contact the corresponding author if you cannot find it there.  "
             )
         L = io.loadmat(fn)
 
@@ -437,7 +437,7 @@ def mapminmax_reverse(
 
 
 def execute_nn(X, VName, Location, Equation, Net, verbose_tf=True):
-    with open("nn_params.pkl", "rb") as f:
+    with open("./pyTRACE/nn_params.pkl", "rb") as f:
         dill = pickle.load(f)
     if VName == "Temperature":
         VName = "EstT_Temperature"
