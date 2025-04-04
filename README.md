@@ -1,4 +1,5 @@
 # pyTRACE
+version 0.0.1 (pre-alpha)
 
 Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) converted to Python.
 
@@ -6,13 +7,11 @@ After https://github.com/BRCScienceProducts/TRACEv1
 
 Please reference the manuscript for TRACEv1 (in print) for further details.
 
-pyTRACE version 0.0.1 (pre-alpha)
-
 This code generates estimates of ocean anthropogenic carbon content from user-supplied inputs of coordinates (lat, lon, depth), salinity, temperature, and date. Information is also needed about the historical and/or future CO<sub>2</sub> trajectory.  This information can be provided or default values can be assumed.  
 
 ## Setup
 
-Clone pyTRACE to your computer or download and extract a zipped file.  Ensure Python, pip, and the dependencies listed in requirements.txt are installed, preferably in a virtual environment. pyTRACE can then be installed (as an editable install) by navigating to the base directory of pyTRACE and running
+Clone pyTRACE to your computer or download and extract a zipped file.  Ensure Python, pip, and the dependencies listed in requirements.txt are installed, preferably in a virtual environment. pyTRACE can then be installed (as an editable install) by navigating to the base directory of pyTRACE and running the following command in a terminal emulator
 ```
 python -m pip install -e .
 ```
