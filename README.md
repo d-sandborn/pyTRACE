@@ -1,7 +1,5 @@
-# pyTRACE
-version 0.0.1 (pre-alpha)
-
-Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) converted to Python.
+# Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)
+version 0.0.1 (alpha)
 
 After https://github.com/BRCScienceProducts/TRACEv1
 
@@ -11,7 +9,7 @@ This code generates estimates of ocean anthropogenic carbon content from user-su
 
 ## Setup
 
-Clone pyTRACE to your computer or download and extract a zipped file.  Ensure Python, pip, and the dependencies listed in requirements.txt are installed, preferably in a virtual environment. pyTRACE can then be installed (as an editable install) by navigating to the base directory of pyTRACE and running the following command in a terminal emulator
+Clone TRACE to your computer or download and extract a zipped file.  Ensure Python, pip, and the dependencies listed in requirements.txt are installed, preferably in a virtual environment. pyTRACE can then be installed (as an editable install) by navigating to the base directory of TRACE and running the following command in a terminal emulator
 ```
 python -m pip install -e .
 ```
@@ -19,7 +17,7 @@ Additionally, PyCO2SYS > v2 is required for speed and stability purposes. Please
 
 ## Use
 
-Call pyTRACE within Python by running 
+Call TRACE within Python by running 
 
 ```
 from pyTRACE import trace
@@ -30,6 +28,47 @@ Which will make available the top-level function for anthropogenic carbon estima
 ```
 ?trace
 ```
+
+To estimate anthropogenic carbon (C<sub>anth</sub>) at the surface ocean at the equator/prime meridian in the years 2000 and 2200 assuming SSP5_3.4_over:
+```
+output = trace(
+    output_coordinates=np.array([[0, 0, 0], [0, 0, 0]]),
+    dates=np.array([2000, 2200]),
+    predictor_measurements=np.array([[35, 20], [35, 20]]),
+    predictor_types=np.array([1, 2]),
+    atm_co2_trajectory=9
+)
+```
+which returns an xarray dataset containing C<sub>anth</sub> at the specified dates and times, its uncertainties, and associated dic, age, and preformed properties. Note that the result below doesn't agree exactly with TRACEv1, which gives C<sub>anth</sub> = [47.7869, 79.8749] for the same inputs. 
+
+```
+>>> output
+
+<xarray.Dataset> Size: 208B
+Dimensions:       (loc: 2)
+Coordinates:
+    year          (loc) int64 16B 2000 2200
+    lon           (loc) int64 16B 0 0
+    lat           (loc) int64 16B 0 0
+Dimensions without coordinates: loc
+Data variables:
+    dic           (loc) float64 16B 2.011e+03 2.04e+03
+    dic_ref       (loc) float64 16B 1.962e+03 1.962e+03
+    canth         (loc) float64 16B 49.31 77.96
+    age           (loc) float64 16B 4.316 4.316
+    preformed_ta  (loc) float64 16B 2.296e+03 2.296e+03
+    preformed_si  (loc) float64 16B 2.167 2.167
+    preformed_p   (loc) float64 16B 0.5108 0.5108
+    temperature   (loc) float64 16B 20.0 20.0
+    salinity      (loc) float64 16B 35.0 35.0
+    uncertainty   (loc) float64 16B 8.835 12.65
+Attributes:
+    description:  pyTRACE output
+
+
+```
+
+More examples will be made available in the ```demos``` folder.
 
 ## Disclaimer
 
