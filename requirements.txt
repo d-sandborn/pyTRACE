@@ -8,3 +8,4 @@ matplotlib
 pyyaml
 tqdm
 seawater
+PyCO2SYS
