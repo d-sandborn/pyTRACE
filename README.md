@@ -15,6 +15,7 @@ Clone pyTRACE to your computer or download and extract a zipped file.  Ensure Py
 ```
 python -m pip install -e .
 ```
+Additionally, PyCO2SYS > v2 is required for speed and stability purposes. Please contact the authors for help installing this until it is made public.
 
 ## Use
 
