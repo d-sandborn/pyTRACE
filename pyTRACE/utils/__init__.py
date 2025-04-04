@@ -6,6 +6,8 @@ from scipy.spatial import Delaunay
 
 
 def equation_check(equation):
+    """Check equation inputs and assigns them to be [1] regardless.
+    Largely a carry-over from ESPER, which accepted more options."""
     match equation:
         case []:
             equation = [1]
@@ -22,6 +24,8 @@ def equation_check(equation):
 
 
 def units_check(per_kg_sw_tf):
+    """Check for per_kg_sw_tf input and setting default if not given.
+    This input is not needed for TRACE, currently"""
     # Checking for per_kg_sw_tf input and setting default if not given. This
     # input is not needed for TRACE, currently
     if not per_kg_sw_tf:
@@ -33,7 +37,7 @@ def units_check(per_kg_sw_tf):
 
 
 def preindustrial_check(preindustrial_xco2):
-    # Checking for preindustrial_xco2 input and setting default if not given
+    """Check for preindustrial_xco2 input and setting default if not given"""
     if not isinstance(preindustrial_xco2, float) and not isinstance(
         preindustrial_xco2, int
     ):
@@ -45,11 +49,12 @@ def preindustrial_check(preindustrial_xco2):
 
 
 def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
+    """Checks the meas_uncerts argument.  This also deals with the
+    possibility that the user has provided a single set of uncertainties
+    for all estimates."""
     if meas_uncerts is not None:
         use_default_uncertainties = False
-        # Sanity checking the meas_uncerts argument.  This also deals with the
-        # possibility that the user has provided a single set of uncertainties
-        # for all estimates.
+
         if (
             (not np.max(np.shape(meas_uncerts)) == len(predictor_measurements))
             and not np.min(
@@ -85,8 +90,8 @@ def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
 
 
 def depth_check(output_coordinates, valid_indices):
-    # This step checks for negative depths.  If found, it changes them to
-    # positive depths and issues a warning.
+    """This step checks for negative depths.  If found, it changes them to
+    positive depths and issues a warning."""
     if np.any(output_coordinates[valid_indices, 2] < 0):
         warnings.warn(
             "Negative depths were detected and changed to positive values."
@@ -98,7 +103,8 @@ def depth_check(output_coordinates, valid_indices):
 
 
 def coordinate_check(output_coordinates, valid_indices):
-    # Book-keeping with coordinate inputs and adjusting negative longitudes.
+    """Book-keeping with coordinate inputs and adjusting negative
+    longitudes."""
     if np.any(np.abs(output_coordinates[:, 1]) > 90):
         raise ValueError(
             "A latitude >90 degrees (N or S) has been detected.  Verify latitude is in the 2nd colum of the coordinate input."
@@ -116,8 +122,8 @@ def prepare_uncertainties(
     use_default_uncertainties,
     input_u,
 ):
-    # Preparing full predictor_measurement uncertainty grid.
-    # Maybe vestigial??
+    """Preparing full predictor_measurement uncertainty grid.
+    Maybe vestigial??"""
     default_uncertainties = np.diag([1, 1, 0.02, 0.02, 0.02, 0.01])
     default_u_all = np.zeros([len(predictor_measurements), 6])
     default_u_all[:, predictor_types - 1] = (
@@ -143,9 +149,9 @@ def prepare_uncertainties(
 
 
 def inverse_gaussian_wrapper(x, gamma, delta):
-    # Calculate ventilation distributions (assumed probability distribution)
-    # lambda should perhaps be 1/1.3 from He et al Schwinger paper
-    # Note that invgauss calls are different in pyTRACE and TRACE!
+    """Calculate ventilation distributions (assumed probability
+    distribution). lambda should perhaps be 1/1.3 from He et al.
+    Note that invgauss calls are different in pyTRACE and TRACE!"""
     nu = gamma
     lam = gamma**3 / 2 / delta**2
     y = invgauss.pdf(x, mu=nu / lam, scale=lam, loc=0)
@@ -153,6 +159,7 @@ def inverse_gaussian_wrapper(x, gamma, delta):
 
 
 def inpolygon(xq, yq, xv, yv):
+    """Probably checks if points in polygon."""
     try:
         points = np.array([xq, yq]).T
         path = np.array([xv, yv]).T

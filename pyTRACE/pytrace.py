@@ -3,7 +3,7 @@ import pandas as pd
 from scipy.stats import invgauss
 from scipy.interpolate import interp1d
 import warnings
-from seawater import satO2, ptmp, dens, pres
+from seawater import satO2, ptmp, dens, pres  # TODO replace with gsw
 import xarray as xr
 from pyTRACE.neuralnets import trace_nn
 import PyCO2SYS as pyco2
@@ -32,97 +32,113 @@ def trace(
     verbose_tf=True,
     error_codes=[-999, -9, -1e20],
     canth_diseq=1,
-    **kwargs,
 ):
-    """Need to make this docstring Python-formatted!
-    This code generates etimates of ocean anthropogenic carbon content from
+    """
+    Generates etimates of ocean anthropogenic carbon content from
     user-supplied inputs of coordinates (lat, lon, depth), salinity,
-    temperature, and date. Information is also needed about the historical
-    and/or future CO2 trajectory.  This information can be provided or
-    default values can be asssumed. Missing data should be indicated with np.nan
-    A NaN coordinate will yield NaN estimates for all equations at that coordinate.
-    A NaN parameter value will yield NaN estimates for all equations that require
-    that parameter. Please send questions or related requests to
-    brendan.carter@noaa.gov or brendan.carter@gmail.com.
+    temperature, and date.
+    ==================================================================
 
-    Input/Output dimensions:
-    p: Integer number of desired  estimate types. For TRACE this is always 1.
-    n: Integer number of desired estimate locations
-    e: Integer number of equations used at each location (up to 4)
-    y: Integer number of parameter measurement types provided by the user.
-    n*e: Total number of estimates returned as an n by e array
+    Information is also needed about the historical and/or future CO2
+    trajectory.  This information can be provided or default values can
+    be asssumed. Missing data should be indicated with np.nan
+    A nan coordinate will yield nan estimates for all equations at
+    that coordinate. A nan parameter value will yield nan estimates for
+    all equations that require that parameter. Please send questions or
+    related requests to sandborn@uw.edu and brendan.carter@gmail.com.
 
-    Args:
-        output_coordinates (numpy.ndarray): n by 3 array of coordinates
-            (longitude degrees E, latitude degrees N, depth m) at which estimates
-            are desired.
-        dates (numpy.ndarray): Array of years c.e. for which estimates are
-            desired. Decimal digits ignored.
-        predictor_measurements (numpy.ndarray): n by y array of parameter
-            measurements (salinity, temperature, etc.) used to estimate
-            alkalinity. The column order (y columns) is arbitrary, but specified
-            by predictor_types. Temperature should be expressed as degrees C and
-            salinity should be specified with the unitless convention.  NaN
-            inputs are acceptable, but will lead to NaN estimates for any
-            equations that depend on that parameter.  If temperature is not
-            provided then it will be estimated from salinity (not recommended).
-        predictor_types (numpy.ndarray): 1 by y array indicating which parameter
-            is in each column of 'predictor_measurements'. Note that salinity is
-            required for all equations. Input parameter key:
-                1. Salinity
-                2. Temperature
-        atm_co2_trajectory (int): Integer between 1 and 9 specifying the
-            atmospheric CO2 trajectory:
-                1. Histyorical/Linear (modify historical CO2 file for updates)
-                2. SSP1_1.9
-                3. SSP1_2.6
-                4. SSP2_4.5
-                5. SSP3_7.0
-                6. SSP3_7.0_lowNTCF
-                7. SSP4_3.4
-                8. SSP4_6.0
-                9. SSP5_3.4_over
-        preindustrial_xco2 (float, optional): Preindustrial reference xCO2
-            value (default: 280 ppm).
-        equations (list, optional): List of equations to use (default: [1]).
-            Indicates which predictors will be used to estimate properties. In
-            PyTRACEv1, this input should always be omitted because there is only
-            one possible equation, but this functionality is retained in the
-            code to allow for eventual generalization of the TRACE NN to operate
-            with more predictor combinations.(S=salinity, Theta=potential
-            temperature, N=nitrate, Si=silicate, T=temperature, O2=dissolved
-            oxygen molecule... see 'predictor_measurements' for units).
-            Options:
-                1.  S, T,
-        meas_uncerts (numpy.ndarray, optional): n by y or 1 by y array of
-        measurement uncertainties (default: [0.003 S, 0.003 degrees C (T or theta),
-            1% AOU]). Uncertainties should be presented in order indicated by
-            'predictor_types'. Providing these estimates will improve estimate uncertainties in
-            'UncertaintyEstimates'. Measurement uncertainties are a small part of
-            TRACE estimate uncertainties for WOCE-quality measurements. However,
-            estimate uncertainty scales with measurement uncertainty, so it is
-            recommended that measurement uncertainties be specified for sensor
-            measurements.  If this optional input argument is not provided, the
-            default WOCE-quality uncertainty is assumed.  If a 1 by y array is
-            provided then the uncertainty estimates are assumed to apply
-            uniformly to all input parameter measurements.
-        per_kg_sw_tf (bool, optional): Retained for future development (allowing
-        for flexible units for currently-unsupported predictors).
-        verbose_tf (bool, optional): Flag to control output verbosity (default: True).
-            Setting this to false will make TRACE stop printing updates to the command
-            line.  This behavior can also be permanently disabled below. Warnings
-            and errors, if any, will be given regardless.
+    Parameters
+    ----------
+    output_coordinates : numpy.ndarray
+        n by 3 array of coordinates (longitude degrees E, latitude
+        degrees N, depth m) at which estimates are desired.
+    dates : numpy.array
+        Array of years c.e. for which estimates
+        are desired. Decimal digits ignored I think?
+    predictor_measurements : numpy.ndarray
+        n by y array of parameter measurements (salinity, temperature,
+        etc.) The column order (y columns) is arbitrary, but specified
+        by predictor_types. Temperature should be expressed as degrees
+        C and salinity should be specified with the unitless convention.
+        nan inputs are acceptable, but will lead to nan estimates for
+        any equations that depend on that parameter. If temperature is
+        not provided then it will be estimated from salinity.
+    predictor_types : numpy.array
+        1 by y array indicating which
+        parameter is in each column of 'predictor_measurements'.
+        Note that salinity is required for all equations. Input
+        parameter key:
+            1. Salinity
+            2. Temperature
+    atm_co2_trajectory : int
+        Integer between 1 and 9 specifying the
+        atmospheric CO2 trajectory:
+            1. Histyorical/Linear (modify historical CO2 file for updates)
+            2. SSP1_1.9
+            3. SSP1_2.6
+            4. SSP2_4.5
+            5. SSP3_7.0
+            6. SSP3_7.0_lowNTCF
+            7. SSP4_3.4
+            8. SSP4_6.0
+            9. SSP5_3.4_over
+    preindustrial_xco2 : float, optional
+        Preindustrial reference xCO2 value. T
+        he default is 280.
+    equations : list, optional
+        Indicates which predictors will be used to estimate properties.
+        This input should always be omitted because there is only
+        one possible equation, but this functionality is retained in the
+        code to allow for eventual generalization of the TRACE NN to
+        operate with more predictor combinations.
+        (S=salinity, Theta=potential temperature, N=nitrate,
+         Si=silicate, T=temperature, O2=dissolved oxygen molecule...
+         see 'predictor_measurements' for units).
+        Options:
+            1.  S, T
 
-    Returns:
-        tuple:
-            - Canth (numpy.ndarray):
-                Anthropogenic carbon estimates. Shape: (n,)
-            - PrefProps (dict):
-                Dictionary containing preformed properties.
-            - Ages (numpy.ndarray):
-                Estimated ages of water masses. Shape: (n,)
-            - Uncertainty (numpy.ndarray):
-                Uncertainty estimates for Canth. Shape: (n,)
+        The default is [1].
+    meas_uncerts : list, optional
+        List of measurement uncertainties presented in order indicated
+        by 'predictor_types'. Providing these estimates will improve
+        estimate uncertainties in 'UncertaintyEstimates'. Measurement
+        uncertainties are a small part of TRACE estimate uncertainties
+        for WOCE-quality measurements. However, estimate uncertainty
+        scales with measurement uncertainty, so it is recommended that
+        measurement uncertainties be specified for sensor measurements.
+        If this optional input argument is not provided, the default
+        WOCE-quality uncertainty is assumed.  If a list is provided
+        then the uncertainty estimates are assumed to apply uniformly
+        to all input parameter measurements.
+        The default is None.
+    per_kg_sw_tf : bool, optional
+        Retained for future development (allowing for flexible units
+        for currently-unsupported predictors). The default is True.
+    verbose_tf : bool, optional
+        Flag to control output verbosity. Setting this to False will
+        make TRACE stop printing updates to the command line.  Warnings
+        and errors, if any, will be given regardless.
+        The default is True.
+    error_codes : list, optional
+        Error codes to be parsed as np.nan in input parameter arrays.
+        The default is [-999, -9, -1e20].
+    canth_diseq : int, optional
+        Air-sea carbon dioxide equilibrium assumed for calculation of
+        pCO2 as a function of atmospheric CO2. A value of 1 indicates
+        full equilibrium.
+        The default is 1.
+
+    Raises
+    ------
+    ValueError
+        Input parameter issues reported to the user.
+
+    Returns
+    -------
+    output : xarray.Dataset
+        Dataset containing input parameters and corresponding estimated
+        Canth, preformed properties, and associated metadata.
+
     """
     equations = equation_check(equations)
     per_kg_sw_tf = units_check(per_kg_sw_tf)

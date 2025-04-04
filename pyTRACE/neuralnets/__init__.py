@@ -19,7 +19,7 @@ from pyTRACE.utils import (
     coordinate_check,
     prepare_uncertainties,
     inverse_gaussian_wrapper,
-    inpolygon
+    inpolygon,
 )
 from seawater import satO2, ptmp, dens, pres
 
@@ -59,105 +59,74 @@ def trace_nn(
         5. pO (preformed dissolved molecular oxygen,i.e., O2<aq>)
         6. SF (scale factors for age distribution)
         7. EstT (temperature estimated from S, coordinates)
-    output_coordinates : np.ndarray
-        n by 3 array of coordinates at which estimates are desired.
-        The first column should be longitude (degrees E), the second
-        column should be latitude (degrees N), and the third column
-        should be depth (m).
-    predictor_measurements : np.ndarray
-        n by y array of arameter measurements that will be used to
-        estimate alkalinity.  The column order (y columns) is arbitrary,
-        but specified by predictor_types. Concentrations should be
-        expressed as micromol per kg seawater unless per_kg_sw_tf is
-        set to false in which case they should be expressed as micromol
-        per L, temperature should be expressed as degrees C, and
-        salinity should be specified with the unitless convention.
-        NaN inputs are acceptable, but will lead to NaN estimates for
-        any equations that depend on that parameter.
-    predictor_types : np.array
-        1 by y vector indicating which parameter is placed in each
-        column of predictor_measurements.  Note that salinity is
-        required for all equations.  If O2 is provided, then
-        temperature or potential temperature must also be provided to
-        convert O2 to AOU. For example, if the first three columns of
-        predictor_measurements contain salinity, silicate, and
-        temperature, then PredictorTypes should equal [1 5 7].
-        Input Parameter Key:
-        1. Salinity
-        2. Temperature
-        3. Phosphate
-        4. Nitrate
-        5. Silicate
-        6. O2
+    output_coordinates : numpy.ndarray
+        n by 3 array of coordinates (longitude degrees E, latitude
+        degrees N, depth m) at which estimates are desired.
+    predictor_measurements : numpy.ndarray
+        n by y array of parameter measurements (salinity, temperature,
+        etc.) The column order (y columns) is arbitrary, but specified
+        by predictor_types. Temperature should be expressed as degrees
+        C and salinity should be specified with the unitless convention.
+        nan inputs are acceptable, but will lead to nan estimates for
+        any equations that depend on that parameter. If temperature is
+        not provided then it will be estimated from salinity.
+    predictor_types : numpy.array
+        1 by y array indicating which
+        parameter is in each column of 'predictor_measurements'.
+        Note that salinity is required for all equations. Input
+        parameter key:
+            1. Salinity
+            2. Temperature
     equations : list, optional
-        1 by e list, default [], indicating which equations will be
-        used to estimate alkalinity. This input also determines the
-        order of the columns in the output. If [] is input
-        or the input is not specified then all 16 equations will be
-        used and only the outputs from the equation with the lowest
-        uncertainty estimate will be returned.
+        Indicates which predictors will be used to estimate properties.
+        This input should always be omitted because there is only
+        one possible equation, but this functionality is retained in the
+        code to allow for eventual generalization of the TRACE NN to
+        operate with more predictor combinations.
+        (S=salinity, Theta=potential temperature, N=nitrate,
+         Si=silicate, T=temperature, O2=dissolved oxygen molecule...
+         see 'predictor_measurements' for units).
+        Options:
+            1.  S, T
 
-        S=salinity, Theta=potential temperature, N=nitrate, Si=silicate,
-        T=temperature, O2=dissolved oxygen molecule... see
-        predictor_measurements for units).
-        Output Equation Key (See below for explanation of A, B, and C):
-        1.  S, T, A, B, C
-        2.  S, T, A, C
-        3.  S, T, B, C
-        4.  S, T, C
-        5.  S, T, A, B
-        6.  S, T, A
-        7.  S, T, B
-        8.  S, T
-        9.  S, A, B, C
-        10. S, A, C
-        11. S, B, C
-        12. S, C
-        13. S, A, B
-        14. S, A
-        15. S, B
-        16. S
-    meas_uncerts : np.ndarray, optional
-        n by y array or 1 by y vector of measurement uncertainties
-        (see predictor_measurements for units). Uncertainties should be
-        presented in order indicated by predictor_types. Providing
-        these estimates will improve ESPER_LIR estimate uncertainties
-        in 'UncertaintyEstimates'. Measurement uncertainties are a
-        small part of ESPER_LIR estimate uncertainties for WOCE-quality
-        measurements. However, estimate uncertainty scales with
-        measurement uncertainty, so it is recommended that measurement
-        uncertainties be specified for sensor measurements.  If this
-        optional input argument is not provided, the default
-        WOCE-quality uncertainty is assumed.  If a 1 by y array is
-        provided then the uncertainty estimates are assumed to apply
-        uniformly to all input parameter measurements. The default is
-        None.
+        The default is [1].
+    meas_uncerts : list, optional
+        List of measurement uncertainties presented in order indicated
+        by 'predictor_types'. Providing these estimates will improve
+        estimate uncertainties in 'UncertaintyEstimates'. Measurement
+        uncertainties are a small part of TRACE estimate uncertainties
+        for WOCE-quality measurements. However, estimate uncertainty
+        scales with measurement uncertainty, so it is recommended that
+        measurement uncertainties be specified for sensor measurements.
+        If this optional input argument is not provided, the default
+        WOCE-quality uncertainty is assumed.  If a list is provided
+        then the uncertainty estimates are assumed to apply uniformly
+        to all input parameter measurements.
+        The default is None.
     error_codes : list, optional
-        List of error codes to assign np.nan to in input.
+        Error codes to be parsed as np.nan in input parameter arrays.
         The default is [-999, -9, -1e20].
     per_kg_sw_tf : bool, optional
-        Many sensors provide measurements in micromol per L (molarity)
-        instead of micromol per kg seawater. Indicate false if provided
-        measurements are expressed in molar units (concentrations must
-        be micromol per L if so).  Outputs will remain in molal units
-        regardless. The default is True.
+        Retained for future development (allowing for flexible units
+        for currently-unsupported predictors). The default is True.
     verbose_tf : bool, optional
-        Setting this to false will make ESPER_LIR stop printing updates
-        to the command line.  This behavior can also be permanently
-        disabled below. Warnings and errors, if any, will be given
-        regardless. The default is True.
+        Flag to control output verbosity. Setting this to False will
+        make TRACE stop printing updates to the command line.  Warnings
+        and errors, if any, will be given regardless.
+        The default is True.
 
     Raises
     ------
     ValueError
-        DESCRIPTION.
+        Input parameter issues reported to the user.
     FileNotFoundError
-        DESCRIPTION.
+        File issues reported to the user.
 
     Returns
     -------
-    Estimates: TYPE
-        DESCRIPTION.
+    Estimates: dict
+        Dictionary of parameters estimated from temperature, salinity,
+        or depth.
 
     """
     equations = equation_check(equations)
@@ -277,7 +246,7 @@ def trace_nn(
         fn = "./pyTRACE/Polys.mat"
         # Making sure you downloaded the needed file and put it somewhere it
         # can be found
-        if not os.path.isfile(fn):  
+        if not os.path.isfile(fn):
             raise FileNotFoundError(
                 "TRACE could not find Polys.mat.  These mandatory file(s) should be distributed from the same website as TRACE.  Contact the corresponding author if you cannot find it there.  "
             )
@@ -414,22 +383,21 @@ def trace_nn(
     return Estimates
 
 
-def mapminmax_apply(
-    x, settings={}
-):  # Map Minimum and Maximum Input Processing Function
+def mapminmax_apply(x, settings={}):
+    """Map Minimum and Maximum Input Processing Function"""
     y = np.subtract(x, np.array(settings["xoffset"]).T)
     y = np.multiply(y, np.array(settings["gain"]).T)
     y = np.add(y, np.array(settings["ymin"]).T)
     return y
 
 
-def tansig_apply(n):  # Sigmoid Symmetric Transfer Function
+def tansig_apply(n):
+    """igmoid Symmetric Transfer Function"""
     return 2 / (1 + np.exp(-2 * n)) - 1
 
 
-def mapminmax_reverse(
-    y, settings={}
-):  # Map Minimum and Maximum Output Reverse-Processing Function
+def mapminmax_reverse(y, settings={}):
+    """Map Minimum and Maximum Output Reverse-Processing Function"""
     x = np.subtract(y, np.array(settings["ymin"]).T)
     x = np.divide(x, np.array(settings["gain"]).T)
     x = np.add(x, np.array(settings["xoffset"]).T)
@@ -437,6 +405,9 @@ def mapminmax_reverse(
 
 
 def execute_nn(X, VName, Location, Equation, Net, verbose_tf=True):
+    """Execute neural network by calling pickle file with weights
+    determined using MATLAB machine learning routines, followed by
+    linear algebra replicating neural network architecture exactly."""
     with open("./pyTRACE/nn_params.pkl", "rb") as f:
         dill = pickle.load(f)
     if VName == "Temperature":
