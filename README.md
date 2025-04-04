@@ -13,18 +13,23 @@ This code generates estimates of ocean anthropogenic carbon content from user-su
 ## Setup
 
 Clone pyTRACE to your computer or download and extract a zipped file.  Ensure Python, pip, and the dependencies listed in requirements.txt are installed, preferably in a virtual environment. pyTRACE can then be installed (as an editable install) by navigating to the base directory of pyTRACE and running
-
-> python -m pip install -e .
+```
+python -m pip install -e .
+```
 
 ## Use
 
 Call pyTRACE within Python by running 
 
-> from pyTRACE.main import pyTRACE
+```
+from pyTRACE.main import pyTRACE
+```
 
 Which will make available the top-level function anthropogenic carbon estimation. For details on its input and output parameters, run
 
+```
 >?pyTRACE
+```
 
 ## Disclaimer
 
