@@ -27,7 +27,7 @@ from pyTRACE.main import pyTRACE
 Which will make available the top-level function anthropogenic carbon estimation. For details on its input and output parameters, run
 
 ```
->?pyTRACE
+?pyTRACE
 ```
 
 ## Disclaimer
