@@ -5,9 +5,9 @@ from scipy.interpolate import interp1d
 import warnings
 from seawater import satO2, ptmp, dens, pres
 import xarray as xr
-from neuralnets import trace_nn
+from pyTRACE.neuralnets import trace_nn
 import PyCO2SYS as pyco2
-from utils import (
+from pyTRACE.utils import (
     equation_check,
     units_check,
     preindustrial_check,
