@@ -1,9 +1,9 @@
 # Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)
 version 0.0.1 (alpha)
 
-After https://github.com/BRCScienceProducts/TRACEv1
+After [TRACEv1](https://github.com/BRCScienceProducts/TRACEv1) with being developed in parallel with [ESPER](https://github.com/BRCScienceProducts/ESPER) and [PyESPER](https://github.com/LarissaMDias/PyESPER).
 
-Please reference the manuscript for TRACEv1 (in print) for further details.
+Please reference the [preprint](https://essd.copernicus.org/preprints/essd-2024-560/) and forthcoming publication on TRACEv1 for further details.
 
 This code generates estimates of ocean anthropogenic carbon content from user-supplied inputs of coordinates (lat, lon, depth), salinity, temperature, and date. Information is also needed about the historical and/or future CO<sub>2</sub> trajectory.  This information can be provided or default values can be assumed.  
 
@@ -39,7 +39,7 @@ output = trace(
     atm_co2_trajectory=9
 )
 ```
-which returns an xarray dataset containing C<sub>anth</sub> at the specified dates and times, its uncertainties, and associated dic, age, and preformed properties. Note that the result below doesn't agree exactly with TRACEv1, which gives C<sub>anth</sub> = [47.7869, 79.8749] for the same inputs. 
+which returns an xarray dataset containing C<sub>anth</sub> at the specified dates and times, its uncertainties, and associated dic, age, and preformed properties. Note that the result below doesn't agree exactly with TRACEv1, which gives C<sub>anth</sub> = [47.7869, 79.8749] for the same inputs. The reasons for this disagreement being investigated.
 
 ```
 >>> output
@@ -68,7 +68,7 @@ Attributes:
 
 ```
 
-More examples will be made available in the ```demos``` folder.
+More examples can be found in the ```demos``` folder.
 
 ## Disclaimer
 
