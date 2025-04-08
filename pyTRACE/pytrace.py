@@ -8,6 +8,7 @@ from seawater import satO2, ptmp, dens, pres  # TODO replace with gsw
 import xarray as xr
 from pyTRACE.neuralnets import trace_nn
 import PyCO2SYS as pyco2
+from os.path import dirname, join as joinpath
 from pyTRACE.utils import (
     equation_check,
     units_check,
@@ -19,6 +20,9 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
     say_hello,
 )
+
+
+DATADIR = joinpath(dirname(__file__), "data")
 
 
 def trace(
@@ -142,7 +146,7 @@ def trace(
         Canth, preformed properties, and associated metadata.
 
     """
-    package_dir = path.dirname(__file__)
+    # package_dir = path.dirname(__file__)
     equations = equation_check(equations)
     per_kg_sw_tf = units_check(per_kg_sw_tf)
     preindustrial_xco2 = preindustrial_check(preindustrial_xco2)
@@ -203,7 +207,7 @@ def trace(
             output_coordinates,
             predictor_measurements[:, predictor_types == 1],
             np.array([1]),
-            package_dir,
+            DATADIR,
             verbose_tf=verbose_tf,
         )
         predictor_measurements = np.hstack(
@@ -230,7 +234,7 @@ def trace(
         C,
         m_all,
         np.array([1, 2]),
-        package_dir,
+        DATADIR,
         verbose_tf=verbose_tf,
     )
 
@@ -238,7 +242,7 @@ def trace(
     if verbose_tf:
         print("\nEstimating scale factors.")
     sfs = trace_nn(
-        [6], C, m_all, np.array([1, 2]), package_dir, verbose_tf=verbose_tf
+        [6], C, m_all, np.array([1, 2]), DATADIR, verbose_tf=verbose_tf
     )
 
     # Load CO2 history
@@ -248,7 +252,7 @@ def trace(
     # value. "Adjusted" can be deleted in the following line to use the
     # original atmospheric values.  If this approach is used, then users should
     # consider altering CanthDiseq below to modulate the degree of equilibrium.
-    co2_rec = np.loadtxt(package_dir + "/CO2TrajectoriesAdjusted.txt")
+    co2_rec = np.loadtxt(DATADIR + "/CO2TrajectoriesAdjusted.txt")
     co2_rec = np.vstack([co2_rec[0, :], co2_rec])
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
 
@@ -319,26 +323,94 @@ def trace(
     # Calculate anthropogenic carbon content
     canth_sub = out - out_ref
 
+    # function for rebuilding full-length output arrays
+
+    def create_vector_with_values(target_length, index_vector, value_vector):
+        result = np.full(target_length, np.nan)
+        result[index_vector] = value_vector
+        return result
+
     output = xr.Dataset(
         data_vars=dict(
-            dic=(["loc"], out),
-            dic_ref=(["loc"], out_ref),
-            canth=(["loc"], canth_sub),
-            age=(["loc"], age),
-            preformed_ta=(["loc"], pref_props_sub["Preformed_TA"]),
-            preformed_si=(["loc"], pref_props_sub["Preformed_Si"]),
-            preformed_p=(["loc"], pref_props_sub["Preformed_P"]),
-            temperature=(["loc"], m_all[:, 1]),
-            salinity=(["loc"], m_all[:, 0]),
+            dic=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, out
+                ),
+            ),
+            dic_ref=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, out_ref
+                ),
+            ),
+            canth=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, canth_sub
+                ),
+            ),
+            age=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, age
+                ),
+            ),
+            preformed_ta=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates),
+                    valid_indices,
+                    pref_props_sub["Preformed_TA"],
+                ),
+            ),
+            preformed_si=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates),
+                    valid_indices,
+                    pref_props_sub["Preformed_Si"],
+                ),
+            ),
+            preformed_p=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates),
+                    valid_indices,
+                    pref_props_sub["Preformed_P"],
+                ),
+            ),
+            temperature=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, m_all[:, 1]
+                ),
+            ),
+            salinity=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, m_all[:, 0]
+                ),
+            ),
             uncertainty=(
                 ["loc"],
-                np.sqrt(4.4**2 + 2**2 + (0.15 * canth_sub) ** 2),
+                create_vector_with_values(
+                    len(output_coordinates),
+                    valid_indices,
+                    np.sqrt(4.4**2 + 2**2 + (0.15 * canth_sub) ** 2),
+                ),
             ),
         ),
         coords=dict(
-            year=(["loc"], dates),
-            lon=(["loc"], C[:, 0]),
-            lat=(["loc"], C[:, 1]),
+            year=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, dates
+                ),
+            ),
+            lon=(["loc"], output_coordinates[:, 0]),
+            lat=(["loc"], output_coordinates[:, 1]),
+            depth=(["loc"], output_coordinates[:, 2]),
         ),
         attrs=dict(description="pyTRACE output"),
     )

@@ -137,7 +137,7 @@ def prepare_uncertainties(
         0.003  # Then setting additive default uncertainties for S
     )
     default_u_all = default_u_all[valid_indices, :]
-    input_u_all = default_u_all[valid_indices, :]
+    input_u_all = default_u_all  # [valid_indices, :]
     if not use_default_uncertainties:  # if user supplied uncertainties
         # input_u_all = np.zeros_like(predictor_measurements)
         input_u_all[:, predictor_types - 1] = input_u

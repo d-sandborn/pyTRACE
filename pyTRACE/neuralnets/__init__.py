@@ -29,7 +29,7 @@ def trace_nn(
     output_coordinates,
     predictor_measurements,
     predictor_types,
-    package_dir,
+    DATADIR,
     equations=[],
     meas_uncerts=None,
     error_codes=[-999, -9, -1e20],
@@ -130,7 +130,7 @@ def trace_nn(
         or depth.
 
     """
-    # package_dir = os.path.dirname(__file__)
+
     equations = equation_check(equations)
     per_kg_sw_tf = units_check(per_kg_sw_tf)
     meas_uncerts, input_u, use_default_uncertainties = uncerts_check(
@@ -178,7 +178,7 @@ def trace_nn(
     Estimates = {
         vname_dict[name]: np.full(n, np.nan) for name in desired_variables
     }
-    for i in tqdm(range(p), disable=(not verbose_tf)):
+    for i in tqdm(range(p), disable=(not verbose_tf), desc="Pref Props"):
         prop = desired_variables[i]
         have_vars = [False] * 6
         match prop:
@@ -245,7 +245,7 @@ def trace_nn(
                     "A property identifier >8 or <1 was supplied, but this routine only has 2 possible property estimates.  The property identifier is the first input."
                 )
         # Loading the data, with an error message if not found
-        fn = "./pyTRACE/Polys.mat"
+        fn = DATADIR + "/Polys.mat"
         # Making sure you downloaded the needed file and put it somewhere it
         # can be found
         if not os.path.isfile(fn):
@@ -272,7 +272,9 @@ def trace_nn(
                     m[:, 0:3].reshape(m.shape[0], -1),
                 )
             )
-            for Net in tqdm(range(4), disable=(not verbose_tf), leave=False):
+            for Net in tqdm(
+                range(4), disable=(not verbose_tf), leave=False, desc="Nets"
+            ):
                 # Separate neural networks are used for the Arctic/Atlantic and
                 # the rest of the ocean.
                 est_other[:, Net - 1] = execute_nn(
@@ -281,7 +283,7 @@ def trace_nn(
                     "Other",
                     Equation,
                     Net,
-                    package_dir,
+                    DATADIR,
                     verbose_tf=verbose_tf,
                 )
                 est_atl[:, Net - 1] = execute_nn(
@@ -290,7 +292,7 @@ def trace_nn(
                     "Atl",
                     Equation,
                     Net,
-                    package_dir,
+                    DATADIR,
                     verbose_tf=verbose_tf,
                 )
 
@@ -418,11 +420,11 @@ def mapminmax_reverse(y, settings={}):
     return x
 
 
-def execute_nn(X, VName, Location, Equation, Net, package_dir, verbose_tf=True):
+def execute_nn(X, VName, Location, Equation, Net, DATADIR, verbose_tf=True):
     """Execute neural network by calling pickle file with weights
     determined using MATLAB machine learning routines, followed by
     linear algebra replicating neural network architecture exactly."""
-    with open(package_dir + "/nn_params.pkl", "rb") as f:
+    with open(DATADIR + "/nn_params.pkl", "rb") as f:
         dill = pickle.load(f)
     if VName == "Temperature":
         VName = "EstT_Temperature"
@@ -453,7 +455,9 @@ def execute_nn(X, VName, Location, Equation, Net, package_dir, verbose_tf=True):
     else:
         Q = 1
     Y = np.full(TS, np.nan)  # [None] * TS
-    for ts in tqdm(range(TS), disable=(not verbose_tf)):
+    for ts in tqdm(
+        range(TS), disable=(not verbose_tf), leave=False, desc="Locations"
+    ):
         if Net == 0:
             Xp1 = mapminmax_apply(X[ts], x1_step1)
             a1 = tansig_apply(np.tile(b1, (1, Q)) + np.dot(IW1_1, Xp1.T))
