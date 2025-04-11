@@ -1,11 +1,11 @@
 # Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)
 version 0.0.1 (alpha)
 
-After [TRACEv1](https://github.com/BRCScienceProducts/TRACEv1) with being developed in parallel with [ESPER](https://github.com/BRCScienceProducts/ESPER) and [PyESPER](https://github.com/LarissaMDias/PyESPER).
+After [TRACEv1](https://github.com/BRCScienceProducts/TRACEv1) and being developed in parallel with [ESPER](https://github.com/BRCScienceProducts/ESPER) and [PyESPER](https://github.com/LarissaMDias/PyESPER).
 
 Please reference the [preprint](https://essd.copernicus.org/preprints/essd-2024-560/) and forthcoming publication on TRACEv1 for further details.
 
-This code generates estimates of ocean anthropogenic carbon content from user-supplied inputs of coordinates (lat, lon, depth), salinity, temperature, and date. Information is also needed about the historical and/or future CO<sub>2</sub> trajectory.  This information can be provided or default values can be assumed.  
+This code generates estimates of ocean anthropogenic carbon content from user-supplied inputs of coordinates (lon, lat, depth), salinity, temperature, and year. Information is also needed about the historical and/or future CO<sub>2</sub> trajectory.  This information can be provided or default values can be assumed.  This tool is a multi-platform implementation of the transit time distribution method aimed at increasing the accessibility of ocean anthropogenic carbon content estimation.
 
 ## Setup
 
@@ -13,7 +13,7 @@ Clone TRACE to your computer or download and extract a zipped file.  Ensure Pyth
 ```
 python -m pip install -e .
 ```
-Additionally, PyCO2SYS > v2 is required for speed and stability purposes. Please contact the authors for help installing this until it is made public.
+Additionally, PyCO2SYS > v2 is required for speed and stability purposes. Please contact the authors for help installing it. 
 
 ## Use
 
