@@ -3,11 +3,11 @@ Combined function for NN estimation in pyTRACE
 """
 
 import numpy as np
-import pandas as pd
 import warnings
 from tqdm import tqdm
 import os
 from scipy import io
+from os.path import join as joinpath
 import pickle
 
 from pyTRACE.utils import (
@@ -21,7 +21,7 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
     inpolygon,
 )
-from seawater import satO2, ptmp, dens, pres
+from seawater import ptmp, dens, pres
 
 
 def trace_nn(
@@ -245,7 +245,7 @@ def trace_nn(
                     "A property identifier >8 or <1 was supplied, but this routine only has 2 possible property estimates.  The property identifier is the first input."
                 )
         # Loading the data, with an error message if not found
-        fn = DATADIR + "/Polys.mat"
+        fn = joinpath(DATADIR, "Polys.mat")
         # Making sure you downloaded the needed file and put it somewhere it
         # can be found
         if not os.path.isfile(fn):
@@ -424,7 +424,7 @@ def execute_nn(X, VName, Location, Equation, Net, DATADIR, verbose_tf=True):
     """Execute neural network by calling pickle file with weights
     determined using MATLAB machine learning routines, followed by
     linear algebra replicating neural network architecture exactly."""
-    with open(DATADIR + "/nn_params.pkl", "rb") as f:
+    with open(joinpath(DATADIR, "nn_params.pkl"), "rb") as f:
         dill = pickle.load(f)
     if VName == "Temperature":
         VName = "EstT_Temperature"

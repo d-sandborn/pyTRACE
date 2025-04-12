@@ -1,10 +1,15 @@
+"""
+Top level module of pyTRACE.
+trace()
+    Generates etimates of ocean anthropogenic carbon content from
+    user-supplied inputs of coordinates (lat, lon, depth), salinity,
+    temperature, and date.
+No other functions presently implemented.
+"""
+
 import numpy as np
-import pandas as pd
-from scipy.stats import invgauss
 from scipy.interpolate import interp1d
 import warnings
-from os import path
-from seawater import satO2, ptmp, dens, pres  # TODO replace with gsw
 import xarray as xr
 from pyTRACE.neuralnets import trace_nn
 import PyCO2SYS as pyco2
@@ -252,7 +257,7 @@ def trace(
     # value. "Adjusted" can be deleted in the following line to use the
     # original atmospheric values.  If this approach is used, then users should
     # consider altering CanthDiseq below to modulate the degree of equilibrium.
-    co2_rec = np.loadtxt(DATADIR + "/CO2TrajectoriesAdjusted.txt")
+    co2_rec = np.loadtxt(joinpath(DATADIR, "CO2TrajectoriesAdjusted.txt"))
     co2_rec = np.vstack([co2_rec[0, :], co2_rec])
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
 

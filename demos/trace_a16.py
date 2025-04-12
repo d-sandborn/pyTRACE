@@ -360,3 +360,84 @@ plt.subplots_adjust(
 )
 
 fig.savefig("a16_age_demo.png")
+
+# %%
+xmin = output_df.lat.min()
+xmax = output_df.lat.max()
+ymin = output_df.depth.min()
+ymax = output_df.depth.max()
+cmap = cm.dense
+vmin = None
+vmax = None
+ybreak = 1000
+X, Y = np.meshgrid(output_df.lat, output_df.depth)
+Xn, Yn = np.mgrid[xmin:xmax:0.5, ymin:ymax:10]
+param_list = ["canth", "age", "sal", "tc", "ta", "dic", "uncert"]
+label_list = [
+    "C$_{anth}$ ($\mu$mol kg$^{-1}$)",
+    "Mean Age (yr)",
+    "Salinity",
+    "Temperature ($^{\circ}$C)",
+    "A$_T$ ($\mu$mol kg$^{-1}$)",
+    "DIC ($\mu$mol kg$^{-1}$)",
+    "u(C$_{anth}$) ($\mu$mol kg$^{-1}$)",
+]
+for i in range(len(param_list)):
+    Z = griddata(
+        (output_df.lat, output_df.depth),
+        output_df[param_list[i]],
+        (Xn, Yn),
+        method="linear",
+        rescale=True,
+    )
+    vmin = np.nanmin(Z)
+    vmax = np.nanmax(Z)
+    fig, ax = plt.subplots(2, figsize=(9, 6))
+    mesh0 = ax[0].contourf(Xn, Yn, Z, cmap=cmap, vmin=vmin, vmax=vmax)
+    lines0 = ax[0].contour(Xn, Yn, Z, colors="k", vmin=vmin, vmax=vmax)
+    mesh1 = ax[1].pcolormesh(Xn, Yn, Z, cmap=cmap, vmin=vmin, vmax=vmax)
+    lines1 = ax[1].contour(Xn, Yn, Z, colors="k", vmin=vmin, vmax=vmax)
+    ax[1].scatter(
+        output_df.lat,
+        output_df.depth,
+        c="k",
+        s=1,
+        marker=".",
+        linewidths=0,
+        edgecolors=None,
+    )
+    ax[0].scatter(
+        output_df.lat,
+        output_df.depth,
+        c="k",
+        s=1,
+        marker=".",
+        linewidths=0,
+        edgecolors=None,
+    )
+    fig.colorbar(
+        mesh0,
+        ax=ax.ravel().tolist(),
+        label=label_list[i],
+        location="right",
+        anchor=(0.5, 1),
+    )
+    ax[1].set_xlabel("Latitude")
+    ax[1].set_ylabel("Depth (m)")
+    ax[0].set_title("TRACE-reconstructed A16 c. 2013")
+    ax[1].fill_between(
+        bottom_depths.lat,
+        bottom_depths.depth,
+        bottom_depths.depth.max(),
+        color="k",
+    )
+    ax[1].set_ylim(ymax, ybreak)
+    ax[0].set_ylim(ybreak, ymin)
+    ax[0].set_xlim(xmin, xmax)
+    ax[1].set_xlim(xmin, xmax)
+
+    plt.subplots_adjust(
+        left=0.1, bottom=0.1, right=0.825, top=0.9, wspace=0.4, hspace=0
+    )
+
+    fig.savefig("a16_" + param_list[i] + "_demo.png")
