@@ -84,7 +84,7 @@ def trace(
     atm_co2_trajectory : int
         Integer between 1 and 9 specifying the
         atmospheric CO2 trajectory:
-            1. Histyorical/Linear (modify historical CO2 file for updates)
+            1. Historical/Linear (modify historical CO2 file for updates)
             2. SSP1_1.9
             3. SSP1_2.6
             4. SSP2_4.5
@@ -258,7 +258,7 @@ def trace(
     # original atmospheric values.  If this approach is used, then users should
     # consider altering CanthDiseq below to modulate the degree of equilibrium.
     co2_rec = np.loadtxt(joinpath(DATADIR, "CO2TrajectoriesAdjusted.txt"))
-    co2_rec = np.vstack([co2_rec[0, :], co2_rec])
+    co2_rec = np.vstack([co2_rec[0, :], co2_rec])  # redundant??
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
 
     y = inverse_gaussian_wrapper(
@@ -287,11 +287,6 @@ def trace(
     vpcorr_wp = np.exp(-0.000544 * m_all[:, 0])
     vpswwp = vpwp * vpcorr_wp
     vpfac = 1 - vpswwp
-    # vpfac=1; % This overrides the commented code above
-
-    # This allows the user to arbitrarily change the degree of equilibration with
-    # the anthropogenic transient (recommended value of 1 if using adjusted CO2
-    # trajectories, which is default).
 
     # Calculate equilibrium DIC with and without anthropogenic CO2
     if verbose_tf:
@@ -337,6 +332,18 @@ def trace(
 
     output = xr.Dataset(
         data_vars=dict(
+            canth=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, canth_sub
+                ),
+            ),
+            age=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, age
+                ),
+            ),
             dic=(
                 ["loc"],
                 create_vector_with_values(
@@ -349,16 +356,20 @@ def trace(
                     len(output_coordinates), valid_indices, out_ref
                 ),
             ),
-            canth=(
+            pco2=(
                 ["loc"],
                 create_vector_with_values(
-                    len(output_coordinates), valid_indices, canth_sub
+                    len(output_coordinates),
+                    valid_indices,
+                    vpfac * (canth_diseq * (co2_set.T - 280) + 280),
                 ),
             ),
-            age=(
+            pco2_ref=(
                 ["loc"],
                 create_vector_with_values(
-                    len(output_coordinates), valid_indices, age
+                    len(output_coordinates),
+                    valid_indices,
+                    preindustrial_xco2 * vpfac,
                 ),
             ),
             preformed_ta=(

@@ -39,36 +39,38 @@ output = trace(
     atm_co2_trajectory=9
 )
 ```
-which returns an xarray dataset containing C<sub>anth</sub> at the specified dates and times, its uncertainties, and associated dic, age, and preformed properties. Note that the result below doesn't agree exactly with TRACEv1, which gives C<sub>anth</sub> = [47.7869, 79.8749] for the same inputs. The reasons for this disagreement being investigated.
+which returns an xarray dataset containing C<sub>anth</sub> at the specified dates and times, its uncertainties, and associated metadata. More examples can be found in the ```demos``` folder.
 
 ```
 >>> output
 
-<xarray.Dataset> Size: 208B
+<xarray.Dataset> Size: 256B
 Dimensions:       (loc: 2)
 Coordinates:
-    year          (loc) int64 16B 2000 2200
+    year          (loc) float64 16B 2e+03 2.2e+03
     lon           (loc) int64 16B 0 0
     lat           (loc) int64 16B 0 0
+    depth         (loc) int64 16B 0 0
 Dimensions without coordinates: loc
 Data variables:
+    canth         (loc) float64 16B 49.32 77.96
+    age           (loc) float64 16B 4.308 4.308
     dic           (loc) float64 16B 2.011e+03 2.04e+03
     dic_ref       (loc) float64 16B 1.962e+03 1.962e+03
-    canth         (loc) float64 16B 49.31 77.96
-    age           (loc) float64 16B 4.316 4.316
+    pco2          (loc) float64 16B 354.3 409.2
+    pco2_ref      (loc) float64 16B 280.0 280.0
     preformed_ta  (loc) float64 16B 2.296e+03 2.296e+03
     preformed_si  (loc) float64 16B 2.167 2.167
     preformed_p   (loc) float64 16B 0.5108 0.5108
     temperature   (loc) float64 16B 20.0 20.0
     salinity      (loc) float64 16B 35.0 35.0
-    uncertainty   (loc) float64 16B 8.835 12.65
+    uncertainty   (loc) float64 16B 8.836 12.65
 Attributes:
     description:  pyTRACE output
 
 
 ```
-
-More examples can be found in the ```demos``` folder.
+Note that the result above doesn't agree exactly with TRACEv1, which gives C<sub>anth</sub> = [47.7869, 79.8749] for the same inputs (which is within estimated uncertainties). The reasons for this disagreement are being investigated, but likely involve the two programs' different versions of (Py)CO2SYS, errors in preformed property estimation, and/or machine rounding error.
 
 ## Disclaimer
 
