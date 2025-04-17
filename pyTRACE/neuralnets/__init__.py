@@ -296,9 +296,6 @@ def trace_nn(
                     verbose_tf=verbose_tf,
                 )
 
-                # est_atl[:, eq, Net] = function_atl(P.T).T
-                # est_other[:, eq, Net] = function_other(P.T).T
-
         # Averaging across neural network committee members
         est_atl = np.nanmean(est_atl, axis=1)
         est_other = np.nanmean(est_other, axis=1)
@@ -361,39 +358,24 @@ def trace_nn(
             np.logical_and(C[:, 1] > -44, C[:, 1] < -34),
         )
         Est = est_other.copy()
+
+        if Est[AAInds].size > 0:
+            Est[AAInds] = est_atl[AAInds]
+        if Est[BeringInds].size > 0:
+            Est[BeringInds] = est_atl[BeringInds] * (
+                (C[BeringInds, 1] - 62.5) / 7.5
+            ) + est_other[BeringInds] * ((70 - C[BeringInds, 1]) / 7.5)
+        if Est[SoAtlInds].size > 0:
+            Est[SoAtlInds] = est_atl[SoAtlInds] * (
+                (C[SoAtlInds, 1] + 44) / 10
+            ) + est_other[SoAtlInds] * ((-34 - C[SoAtlInds, 1]) / 10)
+        if Est[SoAfrInds].size > 0:
+            Est[SoAfrInds] = Est[SoAfrInds] * (
+                (27 - C[SoAfrInds, 0]) / 8
+            ) + est_other[SoAfrInds, :] * ((C[SoAfrInds, 0] - 19) / 8)
+        output_estimates[valid_indices] = Est
         if VName == "SFs":
-            if Est[AAInds].size > 0:
-                Est[AAInds] = est_atl[AAInds]
-            if Est[BeringInds].size > 0:
-                Est[BeringInds] = est_atl[BeringInds] * (
-                    (C[BeringInds, 1] - 62.5) / 7.5
-                ) + est_other[BeringInds] * ((70 - C[BeringInds, 1]) / 7.5)
-            if Est[SoAtlInds].size > 0:
-                Est[SoAtlInds] = est_atl[SoAtlInds] * (
-                    (C[SoAtlInds, 1] + 44) / 10
-                ) + est_other[SoAtlInds] * ((-34 - C[SoAtlInds, 1]) / 10)
-            if Est[SoAfrInds].size > 0:
-                Est[SoAfrInds] = Est[SoAfrInds] * (
-                    (27 - C[SoAfrInds, 0]) / 8
-                ) + est_other[SoAfrInds, :] * ((C[SoAfrInds, 0] - 19) / 8)
-            output_estimates[valid_indices] = Est
             output_estimates = 10.0**output_estimates
-        else:
-            if Est[AAInds].size > 0:
-                Est[AAInds] = est_atl[AAInds]
-            if Est[BeringInds].size > 0:
-                Est[BeringInds] = est_atl[BeringInds] * (
-                    (C[BeringInds, 1] - 62.5) / 7.5
-                ) + est_other[BeringInds] * ((70 - C[BeringInds, 1]) / 7.5)
-            if Est[SoAtlInds].size > 0:
-                Est[SoAtlInds] = est_atl[SoAtlInds] * (
-                    (C[SoAtlInds, 1] + 44) / 10
-                ) + est_other[SoAtlInds] * ((-34 - C[SoAtlInds, 1]) / 10)
-            if Est[SoAfrInds].size > 0:
-                Est[SoAfrInds] = Est[SoAfrInds] * (
-                    (27 - C[SoAfrInds, 0]) / 8
-                ) + est_other[SoAfrInds, :] * ((C[SoAfrInds, 0] - 19) / 8)
-            output_estimates[valid_indices] = Est
         Estimates[VName] = output_estimates
 
     return Estimates
