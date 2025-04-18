@@ -1,5 +1,5 @@
 # Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)
-version 0.0.1 (alpha)
+version 0.0.2 (alpha)
 
 After [TRACEv1](https://github.com/BRCScienceProducts/TRACEv1) and being developed in parallel with [ESPER](https://github.com/BRCScienceProducts/ESPER) and [PyESPER](https://github.com/LarissaMDias/PyESPER).
 
