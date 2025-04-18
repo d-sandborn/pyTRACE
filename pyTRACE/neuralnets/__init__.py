@@ -255,13 +255,11 @@ def trace_nn(
         L = io.loadmat(fn)
 
         output_estimates = np.full((output_coordinates.shape[0]), np.nan)
-        est = np.full(n, np.nan)
         m = np.concat([C[:, 2][:, None], m[:, :]], axis=1)
 
         est_atl = np.full((C.shape[0], 4), np.nan)
         est_other = np.full((C.shape[0], 4), np.nan)
 
-        eq = 0
         Equation = 1  # equations[eq]
         if all([have_vars[k] for k in np.argwhere(need_vars)[:, 0]]):
             P = np.hstack(
@@ -277,7 +275,7 @@ def trace_nn(
             ):
                 # Separate neural networks are used for the Arctic/Atlantic and
                 # the rest of the ocean.
-                est_other[:, Net - 1] = execute_nn(
+                est_other[:, Net] = execute_nn(
                     P,
                     VName,
                     "Other",
@@ -286,7 +284,7 @@ def trace_nn(
                     DATADIR,
                     verbose_tf=verbose_tf,
                 )
-                est_atl[:, Net - 1] = execute_nn(
+                est_atl[:, Net] = execute_nn(
                     P,
                     VName,
                     "Atl",

@@ -53,24 +53,24 @@ Coordinates:
     depth         (loc) int64 16B 0 0
 Dimensions without coordinates: loc
 Data variables:
-    canth         (loc) float64 16B 49.32 77.96
-    age           (loc) float64 16B 4.308 4.308
-    dic           (loc) float64 16B 2.011e+03 2.04e+03
+    canth         (loc) float64 16B 46.91 78.32
+    age           (loc) float64 16B 7.224 7.224
+    dic           (loc) float64 16B 2.009e+03 2.04e+03
     dic_ref       (loc) float64 16B 1.962e+03 1.962e+03
-    pco2          (loc) float64 16B 354.3 409.2
+    pco2          (loc) float64 16B 350.1 409.9
     pco2_ref      (loc) float64 16B 280.0 280.0
     preformed_ta  (loc) float64 16B 2.296e+03 2.296e+03
     preformed_si  (loc) float64 16B 2.167 2.167
     preformed_p   (loc) float64 16B 0.5108 0.5108
     temperature   (loc) float64 16B 20.0 20.0
     salinity      (loc) float64 16B 35.0 35.0
-    uncertainty   (loc) float64 16B 8.836 12.65
+    uncertainty   (loc) float64 16B 8.536 12.7
 Attributes:
     description:  pyTRACE output
 
 
 ```
-Note that the result above doesn't agree exactly with TRACEv1, which gives C<sub>anth</sub> = [47.7869, 79.8749] for the same inputs (which is within estimated uncertainties). The reasons for this disagreement are being investigated, but likely involve the two programs' different versions of (Py)CO2SYS, errors in preformed property estimation, and/or machine rounding error.
+Note that the result above doesn't agree exactly with TRACEv1, which gives C<sub>anth</sub> = [47.7869, 79.8749] for the same inputs (which is within estimated uncertainties). The reasons for this disagreement are being investigated, but likely involve the two programs' different versions of (Py)CO2SYS (known to account for about half the error) and/or machine rounding error. 
 
 ## Disclaimer
 

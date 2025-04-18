@@ -154,8 +154,8 @@ def inverse_gaussian_wrapper(x, gamma=1, delta=1.3):
     Note that invgauss calls are different in pyTRACE and TRACE!
     Also note that TRACE approximates mu as 3.4 instead of ~3.38, as
     commented text below indicates."""
-    nu = 1  # gamma
-    lam = 0.29411764705882354  # gamma**3 / 2 / delta**2 #default 0.29585798816568043
+    nu = 3.4  # gamma
+    lam = 1  # gamma**3 / 2 / delta**2 #default 0.29585798816568043
     y = invgauss.pdf(x, mu=nu / lam, scale=lam, loc=0)
     return y
 
