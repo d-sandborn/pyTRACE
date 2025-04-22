@@ -7,6 +7,7 @@ trace()
 No other functions presently implemented.
 """
 
+import sys
 import numpy as np
 from scipy.interpolate import interp1d
 import warnings
@@ -14,6 +15,7 @@ import xarray as xr
 from pyTRACE.neuralnets import trace_nn
 import PyCO2SYS as pyco2
 from os.path import dirname, join as joinpath
+import datetime
 from pyTRACE.utils import (
     equation_check,
     units_check,
@@ -337,24 +339,45 @@ def trace(
                 create_vector_with_values(
                     len(output_coordinates), valid_indices, canth_sub
                 ),
+                {
+                    "units": "micro_mol_carbon_per_kg",
+                    "long_name": "anthropogenic carbon",
+                    "standard_name": "moles_of_anthropogenic_carbon_per_unit_mass_in_sea_water",
+                    "ancillary_variables": "canth",
+                },
             ),
             age=(
                 ["loc"],
                 create_vector_with_values(
                     len(output_coordinates), valid_indices, age
                 ),
+                {
+                    "units": "year",
+                    "long_name": "mean water mass age",
+                    "standard_name": "age_of_water_mass",
+                },
             ),
             dic=(
                 ["loc"],
                 create_vector_with_values(
                     len(output_coordinates), valid_indices, out
                 ),
+                {
+                    "units": "micro_mol_carbon_per_kg",
+                    "long_name": "dissolved inorganic carbon",
+                    "standard_name": "moles_of_dissolved_inorganic_carbon_per_unit_mass_in_sea_water",
+                },
             ),
             dic_ref=(
                 ["loc"],
                 create_vector_with_values(
                     len(output_coordinates), valid_indices, out_ref
                 ),
+                {
+                    "units": "micro_mol_carbon_per_kg",
+                    "long_name": "preindustrial dissolved inorganic carbon",
+                    "standard_name": "preindustrial_moles_of_dissolved_inorganic_carbon_per_unit_mass_in_sea_water",
+                },
             ),
             pco2=(
                 ["loc"],
@@ -363,6 +386,11 @@ def trace(
                     valid_indices,
                     vpfac * (canth_diseq * (co2_set.T - 280) + 280),
                 ),
+                {
+                    "units": "micro_atm",
+                    "long_name": "partial pressure of carbon dioxide",
+                    "standard_name": "partial_pressure_of_carbon_dioxide_in_sea_water",
+                },
             ),
             pco2_ref=(
                 ["loc"],
@@ -371,6 +399,11 @@ def trace(
                     valid_indices,
                     preindustrial_xco2 * vpfac,
                 ),
+                {
+                    "units": "micro_atm",
+                    "long_name": "preindustrial partial pressure of carbon dioxide",
+                    "standard_name": "preindustrial_partial_pressure_of_carbon_dioxide_in_sea_water",
+                },
             ),
             preformed_ta=(
                 ["loc"],
@@ -379,6 +412,11 @@ def trace(
                     valid_indices,
                     pref_props_sub["Preformed_TA"],
                 ),
+                {
+                    "units": "micro_mol_per_kg",
+                    "long_name": "preformed alkalinity",
+                    "standard_name": "sea_water_preformed_alkalinity_per_unit_mass_expressed_as_mole_equivalent",
+                },
             ),
             preformed_si=(
                 ["loc"],
@@ -387,6 +425,11 @@ def trace(
                     valid_indices,
                     pref_props_sub["Preformed_Si"],
                 ),
+                {
+                    "units": "micro_mol_per_kg",
+                    "long_name": "preformed total silicate",
+                    "standard_name": "moles_of_silicate_per_unit_mass_in_sea_water",
+                },
             ),
             preformed_p=(
                 ["loc"],
@@ -395,26 +438,46 @@ def trace(
                     valid_indices,
                     pref_props_sub["Preformed_P"],
                 ),
+                {
+                    "units": "micro_mol_per_kg",
+                    "long_name": "preformed total phosphate",
+                    "standard_name": "moles_of_phosphate_per_unit_mass_in_sea_water",
+                },
             ),
             temperature=(
                 ["loc"],
                 create_vector_with_values(
                     len(output_coordinates), valid_indices, m_all[:, 1]
                 ),
+                {
+                    "units": "degree_C",
+                    "long_name": "in-situ temperature",
+                    "standard_name": "sea_water_temperature",
+                },
             ),
             salinity=(
                 ["loc"],
                 create_vector_with_values(
                     len(output_coordinates), valid_indices, m_all[:, 0]
                 ),
+                {
+                    "units": 1,
+                    "long_name": "spractical alinity",
+                    "standard_name": "sea_water_practical_salinity",
+                },
             ),
-            uncertainty=(
+            u_canth=(
                 ["loc"],
                 create_vector_with_values(
                     len(output_coordinates),
                     valid_indices,
                     np.sqrt(4.4**2 + 2**2 + (0.15 * canth_sub) ** 2),
                 ),
+                {
+                    "units": "micro_mol_carbon_per_kg",
+                    "long_name": "estimated uncertainty of anthropogenic carbon",
+                    "standard_name": "uncertainty_moles_of_anthropogenic_carbon_per_unit_mass_in_sea_water",
+                },
             ),
         ),
         coords=dict(
@@ -423,14 +486,51 @@ def trace(
                 create_vector_with_values(
                     len(output_coordinates), valid_indices, dates
                 ),
+                {
+                    "units": "years since 1-1-1 0:0:0",
+                    "long_name": "calendar year c.e.",
+                    "standard_name": "mole_concentration_of_anthropogenic_carbon_in_seawater",
+                },
             ),
-            lon=(["loc"], output_coordinates[:, 0]),
-            lat=(["loc"], output_coordinates[:, 1]),
-            depth=(["loc"], output_coordinates[:, 2]),
+            lon=(
+                ["loc"],
+                output_coordinates[:, 0],
+                {
+                    "units": "degrees_east",
+                    "long_name": "longitude",
+                    "standard_name": "longitude",
+                },
+            ),
+            lat=(
+                ["loc"],
+                output_coordinates[:, 1],
+                {
+                    "units": "degrees_north",
+                    "long_name": "latitude",
+                    "standard_name": "latitude",
+                },
+            ),
+            depth=(
+                ["loc"],
+                output_coordinates[:, 2],
+                {
+                    "units": "m",
+                    "long_name": "depth",
+                    "standard_name": "depth_below_sea_surface",
+                    "positive": "down",
+                    "valid_min": 0,
+                    "valid_max": 10936,
+                },
+            ),
         ),
-        attrs=dict(description="pyTRACE output"),
+        attrs=dict(
+            Conventions="CF-1.12",
+            description="Results of Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE).",
+            history=str(datetime.datetime.now()) + " " + sys.version,
+            references="doi.org/10.5194/essd-2024-560",
+        ),
     )
     # Return results
     if verbose_tf:
-        print("\npyTRACE completed.")
+        print("\nTRACE completed.")
     return output
