@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(name='pyTRACE',
       python_requires='>=3.10',
-      version='0.0.1',
+      version='0.0.2',
       description='Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) in Python',
       long_description=open('README.md').read(),
       author='Daniel Sandborn & Brendan Carter',
