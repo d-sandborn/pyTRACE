@@ -1,9 +1,11 @@
 import numpy as np
 import warnings
-from seawater import satO2, ptmp, dens, pres
 from scipy.stats import invgauss
 from scipy.spatial import Delaunay
-
+from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore')
+    from seawater import ptmp, dens, pres
 
 def equation_check(equation):
     """Check equation inputs and assigns them to be [1] regardless.
@@ -185,7 +187,7 @@ CC░▒▓█▓▒░CCC░▒▓█▓▒░░▒▓█▓▒░▒▓█▓
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-                         Python v0.0.1 alpha
+                         Python v0.0.3 alpha
                     
 Carter, B.; Sandborn D. 2025.
 MATLAB - github.com/BRCScienceProducts/TRACEv1

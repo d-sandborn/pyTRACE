@@ -45,6 +45,7 @@ def trace(
     verbose_tf=True,
     error_codes=[-999, -9, -1e20],
     canth_diseq=1,
+    eos = 'seawater',
 ):
     """
     Generates etimates of ocean anthropogenic carbon content from
@@ -140,6 +141,12 @@ def trace(
         pCO2 as a function of atmospheric CO2. A value of 1 indicates
         full equilibrium.
         The default is 1.
+    eos: str, optional
+        Choice of seawater equation of state to use for potential
+        temperature, density, and depth conversions. Available choices
+        are 'seawater' (EOS-80) and 'gsw' (TEOS-10). 'seawater' will
+        be deprecated, but is kept for compatibility with TRACEv1. 
+        The default is 'seawater'.
 
     Raises
     ------
@@ -216,6 +223,7 @@ def trace(
             np.array([1]),
             DATADIR,
             verbose_tf=verbose_tf,
+            eos = eos
         )
         predictor_measurements = np.hstack(
             (predictor_measurements, ests["Temperature"][:, None])

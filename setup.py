@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(name='pyTRACE',
       python_requires='>=3.10',
-      version='0.0.2',
+      version='0.0.3',
       description='Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) in Python',
       long_description=open('README.md').read(),
       author='Daniel Sandborn & Brendan Carter',
@@ -21,7 +21,8 @@ setup(name='pyTRACE',
           'matplotlib',
           'pyyaml',
           'tqdm',
-          'seawater',
+          'seawater', #deprecated, kept for comparability with TRACEv1
+          'gsw' #replacement for seawater
       ],
       classifiers=[
           'Programming Language :: Python :: 3.12',

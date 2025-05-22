@@ -21,8 +21,11 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
     inpolygon,
 )
-from seawater import ptmp, dens, pres
 
+from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
+with warnings.catch_warnings():
+    warnings.simplefilter('ignore')
+    from seawater import ptmp, dens, pres
 
 def trace_nn(
     desired_variables,
@@ -35,6 +38,7 @@ def trace_nn(
     error_codes=[-999, -9, -1e20],
     per_kg_sw_tf=True,
     verbose_tf=True,
+    eos = 'seawater',
 ):
     """
     Implements ESPER NN estimation of properties for pyTRACE.
@@ -115,6 +119,12 @@ def trace_nn(
         make TRACE stop printing updates to the command line.  Warnings
         and errors, if any, will be given regardless.
         The default is True.
+    eos: str, optional
+        Choice of seawater equation of state to use for potential
+        temperature, density, and depth conversions. Available choices
+        are 'seawater' (EOS-80) and 'gsw' (TEOS-10). 'seawater' will
+        be deprecated, but is kept for compatibility with TRACEv1. 
+        The default is 'seawater'.
 
     Raises
     ------
@@ -211,7 +221,30 @@ def trace_nn(
         m = m_all[:, needed_for_property]
 
         if need_vars[1]:
-            m[:, 1] = ptmp(m[:, 0], m[:, 1], pres(C[:, 2], C[:, 1]), 0)
+            if eos == 'seawater':
+                m[:, 1] = ptmp(
+                    m[:, 0], 
+                    m[:, 1], 
+                    pres(
+                        C[:, 2], 
+                        C[:, 1]), 
+                    0)
+            else:
+                m[:, 1] = pt0_from_t(
+                    SA_from_SP(
+                        m[:, 0], 
+                        p_from_z(
+                            C[:, 2], 
+                            C[:, 1]
+                            ), 
+                        C[:, 0], 
+                        C[:, 1]), 
+                    m[:, 1], 
+                    p_from_z(
+                        C[:, 2], 
+                        C[:, 1]
+                        )
+                    )
 
         # Checking to see whether O2 is needed. Defining AOU and subbing in for
         # O2 if yes (see above).
@@ -220,7 +253,29 @@ def trace_nn(
 
         # Converting units to molality if they are provided as molarity.
         if not per_kg_sw_tf:
-            densities = dens(m[:, 0], m[:, 1], pres(C[:, 2], C[:, 1])) / 1000
+            if eos == 'seawater':
+                densities = dens(
+                    m[:, 0], 
+                    m[:, 1], 
+                    pres(C[:, 2], 
+                        C[:, 1]
+                        )
+                    ) / 1000
+            else:
+                densities = rho_t_exact( # avoid calculating CT
+                    SA_from_SP(
+                        m[:, 0], 
+                        p_from_z(
+                            C[:, 2], 
+                            C[:, 1]), 
+                        C[:, 0], 
+                        C[:, 1]), 
+                    m[:, 1], 
+                    p_from_z(
+                        C[:, 2], 
+                        C[:, 1]
+                        )
+                    ) / 1000
             m[:, 2] = m[:, 2] / densities
             m[:, 3] = m[:, 3] / densities
             m[:, 4] = m[:, 4] / densities
