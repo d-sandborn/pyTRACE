@@ -9,7 +9,7 @@ This code generates estimates of ocean anthropogenic carbon content from user-su
 
 ## Setup
 
-Clone TRACE to your computer or download and extract a [release](https://github.com/d-sandborn/pyTRACE/releases).  Ensure Python, pip, and the dependencies listed in requirements.txt are installed, preferably in a virtual environment. pyTRACE can then be installed (as an editable install) by navigating to the base directory of TRACE and running the following command in a terminal emulator
+Clone TRACE to your machine or download and unzip a [release](https://github.com/d-sandborn/pyTRACE/releases).  Ensure Python and pip are installed, preferably in a virtual environment (we suggest [this method](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html)). pyTRACE can then be installed (as an editable install) by navigating to the unzipped directory of TRACE and running the following command in a terminal emulator
 ```
 python -m pip install -e .
 ```
@@ -17,13 +17,13 @@ Additionally, PyCO2SYS > v2 is required for speed and stability purposes. Instru
 
 ## Use
 
-Call TRACE within Python by running 
+Call TRACE within a Python script or iPython console by running 
 
 ```
 from pyTRACE import trace
 ```
 
-Which will make available the top-level function for anthropogenic carbon estimation. For details on its input and output parameters, run
+which will make available the top-level function for anthropogenic carbon estimation. For details on its input and output parameters, run
 
 ```
 ?trace
@@ -79,9 +79,9 @@ array([46.90857872, 78.31700617])
 
 ```
 
-Note that the result above doesn't agree exactly with TRACEv1, which gives C<sub>anth</sub> = ```[47.7869 79.8749]``` for the same inputs (which is within estimated uncertainties). The reasons for this disagreement are being investigated, but likely involve the two programs' different versions of (Py)CO2SYS (known to account for about half the error) and/or machine rounding error. 
+Note that the result above doesn't agree exactly with TRACEv1, which gives C<sub>anth</sub> = ```[47.7869 79.8749]``` for the same inputs (which is within estimated uncertainties). The reasons for this disagreement are being investigated, but likely involve the two programs' different versions of (Py)CO2SYS (known to account for at least half the error), parameterization and scaling of inverse gaussian functions, and/or machine rounding error. 
 
-Calling ```trace``` without a temperature input will cause it to estimate temperature from salinity and coordinates via a neural network. This is not recommended, but will yield results with a warning as in TRACEv1, which gave C<sub>anth</sub> = ```[56.0591 66.4567]``` for the same inputs:
+Calling ```trace``` without a temperature input will cause it to estimate temperature from salinity and coordinates via a neural network. This is **not** recommended, but will yield results (with a warning) as in TRACEv1, which gave C<sub>anth</sub> = ```[56.0591 66.4567]``` for the same inputs:
 
 ```
 >>> trace(
