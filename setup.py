@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(name='pyTRACE',
       python_requires='>=3.10',
-      version='0.0.3',
+      version='0.1.0',
       description='Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) in Python',
       long_description=open('README.md').read(),
       author='Daniel Sandborn & Brendan Carter',
@@ -12,6 +12,7 @@ setup(name='pyTRACE',
       url='https://github.com/d-sandborn/pyTRACE',
       packages=find_packages(),
       install_requires=[
+          'python'
           'numpy',
           'pandas',
           'netcdf4',
@@ -26,7 +27,7 @@ setup(name='pyTRACE',
       ],
       classifiers=[
           'Programming Language :: Python :: 3.12',
-          'Development Status :: 1 - Planning',
+          'Development Status :: 4 - Beta',
           'Intended Audience :: Science/Research',
           'License :: OSI Approved :: MIT License',
           'Operating System :: OS Independent',

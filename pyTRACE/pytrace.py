@@ -48,6 +48,10 @@ def trace(
     eos="seawater",
     gamma=1,  # broken
     delta=1.3,  # broken
+    opt_pH_scale=1,
+    opt_k_carbonic=10,  # LDK00
+    opt_k_HSO4=1,  # D90a
+    opt_total_borate=2,
 ):
     """
     Generates etimates of ocean anthropogenic carbon content from
@@ -153,10 +157,22 @@ def trace(
         First moment of inverse gaussian distribution used to convolute
         the surface and interior histories of anthropogenic carbon.
         The default is 1.
-    gamma: float, optional
+    delta: float, optional
         Second moment of inverse gaussian distribution used to convolute
         the surface and interior histories of anthropogenic carbon.
         The default is 1.3.
+    opt_pH_scale: int, optional
+        PyCO2SYS option for pH scale. 
+        The default is 1.
+    opt_k_carbonic: int, optional
+        PyCO2SYS option for carbonic acid dissociation constants. 
+        The default is 10.
+    opt_k_HSO4: int, optional
+        PyCO2SYS option for bisulfate dissociation constant.
+        The default is 1.
+    opt_total_borate: int, optional
+        PyCO2SYS option for borate:salinity relationship to use to estimate total borate.
+        The default is 2. 
 
     Raises
     ------
@@ -319,10 +335,10 @@ def trace(
         pressure=0,
         total_silicate=pref_props_sub["Preformed_Si"],
         total_phosphate=pref_props_sub["Preformed_P"],
-        opt_pH_scale=1,
-        opt_k_carbonic=10,  # LDK00
-        opt_k_HSO4=1,  # D90a
-        opt_total_borate=2,  # LKB10
+        opt_pH_scale=opt_pH_scale,
+        opt_k_carbonic=opt_k_carbonic,  # LDK00
+        opt_k_HSO4=opt_k_HSO4,  # D90a
+        opt_total_borate=opt_total_borate,  # LKB10
     )
     out = out["dic"]
     out_ref = pyco2.sys(
@@ -333,10 +349,10 @@ def trace(
         pressure=0,
         total_silicate=pref_props_sub["Preformed_Si"],
         total_phosphate=pref_props_sub["Preformed_P"],
-        opt_pH_scale=1,
-        opt_k_carbonic=10,  # LDK00
-        opt_k_HSO4=1,  # D90a
-        opt_total_borate=2,  # LKB10
+        opt_pH_scale=opt_pH_scale,
+        opt_k_carbonic=opt_k_carbonic,  # LDK00
+        opt_k_HSO4=opt_k_HSO4,  # D90a
+        opt_total_borate=opt_total_borate,  # LKB10
     )
     out_ref = out_ref["dic"]
 
@@ -601,11 +617,10 @@ def trace(
             history=str(datetime.datetime.now()) + " " + sys.version,
             references="doi.org/10.5194/essd-2024-560",
             co2sys_parameters=dict(
-                pressure=0,
-                opt_pH_scale=1,
-                opt_k_carbonic=10,  # LDK00
-                opt_k_HSO4=1,  # D90a
-                opt_total_borate=2,
+                opt_pH_scale=opt_pH_scale,
+                opt_k_carbonic=opt_k_carbonic,  # LDK00
+                opt_k_HSO4=opt_k_HSO4,  # D90a
+                opt_total_borate=opt_total_borate,
             ),
             trace_parameters=dict(
                 meas_uncerts=meas_uncerts,

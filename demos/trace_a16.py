@@ -97,7 +97,7 @@ output_df = pd.DataFrame(
         lat=output.lat.data,
         depth=output.depth.data,
         canth=output.canth.data,
-        age=output.age.data,
+        mean_age=output.mean_age.data,
         sal=output.salinity.data,
         tc=output.temperature.data,
         ta=output.preformed_ta.data,
@@ -121,7 +121,7 @@ vmax = None
 ybreak = 1000
 X, Y = np.meshgrid(output_df.lat, output_df.depth)
 Xn, Yn = np.mgrid[xmin:xmax:0.5, ymin:ymax:10]
-param_list = ["canth", "age", "sal", "tc", "ta", "dic", "u_canth"]
+param_list = ["canth", "mean_age", "sal", "tc", "ta", "dic", "u_canth"]
 label_list = [
     "C$_{anth}$ ($\mu$mol kg$^{-1}$)",
     "Mean Age (yr)",
