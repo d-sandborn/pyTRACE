@@ -12,7 +12,6 @@ setup(name='pyTRACE',
       url='https://github.com/d-sandborn/pyTRACE',
       packages=find_packages(),
       install_requires=[
-          'python'
           'numpy',
           'pandas',
           'netcdf4',
