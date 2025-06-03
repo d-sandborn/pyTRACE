@@ -3,7 +3,7 @@ Top level module of pyTRACE.
 trace()
     Generates etimates of ocean anthropogenic carbon content from
     user-supplied inputs of coordinates (lat, lon, depth), salinity,
-    temperature, and date.
+    temperature, and year.
 No other functions presently implemented.
 """
 
@@ -45,7 +45,9 @@ def trace(
     verbose_tf=True,
     error_codes=[-999, -9, -1e20],
     canth_diseq=1,
-    eos = 'seawater',
+    eos="seawater",
+    gamma=1,  # broken
+    delta=1.3,  # broken
 ):
     """
     Generates etimates of ocean anthropogenic carbon content from
@@ -145,8 +147,16 @@ def trace(
         Choice of seawater equation of state to use for potential
         temperature, density, and depth conversions. Available choices
         are 'seawater' (EOS-80) and 'gsw' (TEOS-10). 'seawater' will
-        be deprecated, but is kept for compatibility with TRACEv1. 
+        be deprecated, but is kept for compatibility with TRACEv1.
         The default is 'seawater'.
+    gamma: float, optional
+        First moment of inverse gaussian distribution used to convolute
+        the surface and interior histories of anthropogenic carbon.
+        The default is 1.
+    gamma: float, optional
+        Second moment of inverse gaussian distribution used to convolute
+        the surface and interior histories of anthropogenic carbon.
+        The default is 1.3.
 
     Raises
     ------
@@ -223,7 +233,7 @@ def trace(
             np.array([1]),
             DATADIR,
             verbose_tf=verbose_tf,
-            eos = eos
+            eos=eos,
         )
         predictor_measurements = np.hstack(
             (predictor_measurements, ests["Temperature"][:, None])
@@ -271,10 +281,9 @@ def trace(
     co2_rec = np.vstack([co2_rec[0, :], co2_rec])  # redundant??
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
 
-    y = inverse_gaussian_wrapper(
-        x=np.arange(0.01, 5.01, 0.01), gamma=1, delta=1.3
+    ventilation = inverse_gaussian_wrapper(
+        x=np.arange(0.01, 5.01, 0.01), gamma=gamma, delta=delta
     )
-    ventilation = y / y.sum()
 
     # Interpolate CO2 based on ventilation and atmospheric trajectory
     co2_set = interp1d(co2_rec[:, 0], co2_rec[:, 0 + atm_co2_trajectory])
@@ -284,15 +293,16 @@ def trace(
     co2_set = co2_set.dot(ventilation.T)
 
     # Calculate transit times (assumed based on ventilation)
-    age = (sfs["SFs"].reshape(-1, 1) * np.arange(1, 501)).dot(
-        ventilation.T
-    )  # weird subset - check after NNs are working
+    age = (sfs["SFs"].reshape(-1, 1) * np.arange(1, 501)).dot(ventilation.T)
+    mode_age = (sfs["SFs"].reshape(-1, 1) * np.arange(1, 501))[
+        :, np.argmax(ventilation)
+    ]
 
-    # Calculate vapor pressure correction term (assumed equation)
+    # Calculate vapor pressure correction term
     vpwp = np.exp(
         24.4543
         - 67.4509 * (100 / (293.15 + m_all[:, 1]))
-        - 4.8489 * np.log((293.15 + m_all[:, 1]))
+        - 4.8489 * np.log((293.15 + m_all[:, 1]) / 100)
     )
     vpcorr_wp = np.exp(-0.000544 * m_all[:, 0])
     vpswwp = vpwp * vpcorr_wp
@@ -354,7 +364,7 @@ def trace(
                     "ancillary_variables": "canth",
                 },
             ),
-            age=(
+            mean_age=(
                 ["loc"],
                 create_vector_with_values(
                     len(output_coordinates), valid_indices, age
@@ -362,7 +372,18 @@ def trace(
                 {
                     "units": "year",
                     "long_name": "mean water mass age",
-                    "standard_name": "age_of_water_mass",
+                    "standard_name": "mean_age_of_water_mass",
+                },
+            ),
+            mode_age=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates), valid_indices, mode_age
+                ),
+                {
+                    "units": "year",
+                    "long_name": "mode water mass age",
+                    "standard_name": "mode_age_of_water_mass",
                 },
             ),
             dic=(
@@ -487,6 +508,45 @@ def trace(
                     "standard_name": "uncertainty_moles_of_anthropogenic_carbon_per_unit_mass_in_sea_water",
                 },
             ),
+            gamma=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates),
+                    valid_indices,
+                    gamma,
+                ),
+                {
+                    "units": 1,
+                    "long_name": "first moment of inverse gaussian distribution",
+                    "standard_name": "first_moment_of_inverse_gaussian_distribution",
+                },
+            ),
+            delta=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates),
+                    valid_indices,
+                    delta,
+                ),
+                {
+                    "units": 1,
+                    "long_name": "second moment of inverse gaussian distribution",
+                    "standard_name": "second_moment_of_inverse_gaussian_distribution",
+                },
+            ),
+            scale_factor=(
+                ["loc"],
+                create_vector_with_values(
+                    len(output_coordinates),
+                    valid_indices,
+                    sfs["SFs"],
+                ),
+                {
+                    "units": 1,
+                    "long_name": "scaling factor of inverse gaussian distribution",
+                    "standard_name": "scaling_factor_of_inverse_gaussian_distribution",
+                },
+            ),
         ),
         coords=dict(
             year=(
@@ -497,7 +557,7 @@ def trace(
                 {
                     "units": "years since 1-1-1 0:0:0",
                     "long_name": "calendar year c.e.",
-                    "standard_name": "mole_concentration_of_anthropogenic_carbon_in_seawater",
+                    "standard_name": "year_common_era",
                 },
             ),
             lon=(
@@ -507,6 +567,8 @@ def trace(
                     "units": "degrees_east",
                     "long_name": "longitude",
                     "standard_name": "longitude",
+                    "valid_min": -360,  # I think
+                    "valid_max": 360,
                 },
             ),
             lat=(
@@ -516,6 +578,8 @@ def trace(
                     "units": "degrees_north",
                     "long_name": "latitude",
                     "standard_name": "latitude",
+                    "valid_min": -90,
+                    "valid_max": 90,
                 },
             ),
             depth=(
@@ -533,9 +597,24 @@ def trace(
         ),
         attrs=dict(
             Conventions="CF-1.12",
-            description="Results of Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE).",
+            description="Results of Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) version 0.1.0 (beta)",
             history=str(datetime.datetime.now()) + " " + sys.version,
             references="doi.org/10.5194/essd-2024-560",
+            co2sys_parameters=dict(
+                pressure=0,
+                opt_pH_scale=1,
+                opt_k_carbonic=10,  # LDK00
+                opt_k_HSO4=1,  # D90a
+                opt_total_borate=2,
+            ),
+            trace_parameters=dict(
+                meas_uncerts=meas_uncerts,
+                per_kg_sw_tf=per_kg_sw_tf,
+                canth_diseq=canth_diseq,
+                eos=eos,
+                gamma=gamma,
+                delta=delta,
+            ),
         ),
     )
     # Return results

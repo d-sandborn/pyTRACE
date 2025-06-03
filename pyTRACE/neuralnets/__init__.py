@@ -425,7 +425,7 @@ def trace_nn(
         if Est[SoAfrInds].size > 0:
             Est[SoAfrInds] = Est[SoAfrInds] * (
                 (27 - C[SoAfrInds, 0]) / 8
-            ) + est_other[SoAfrInds, :] * ((C[SoAfrInds, 0] - 19) / 8)
+            ) + est_other[SoAfrInds] * ((C[SoAfrInds, 0] - 19) / 8)
         output_estimates[valid_indices] = Est
         if VName == "SFs":
             output_estimates = 10.0**output_estimates

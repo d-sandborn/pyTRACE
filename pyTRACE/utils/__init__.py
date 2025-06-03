@@ -3,9 +3,11 @@ import warnings
 from scipy.stats import invgauss
 from scipy.spatial import Delaunay
 from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
+
 with warnings.catch_warnings():
-    warnings.simplefilter('ignore')
+    warnings.simplefilter("ignore")
     from seawater import ptmp, dens, pres
+
 
 def equation_check(equation):
     """Check equation inputs and assigns them to be [1] regardless.
@@ -27,7 +29,7 @@ def equation_check(equation):
 
 def units_check(per_kg_sw_tf):
     """Check for per_kg_sw_tf input and setting default if not given.
-    This input is not needed for TRACE, currently"""
+    This input is not needed for TRACE, currently."""
     # Checking for per_kg_sw_tf input and setting default if not given. This
     # input is not needed for TRACE, currently
     if not per_kg_sw_tf:
@@ -80,7 +82,7 @@ def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
                 np.ones(len(predictor_measurements)) * meas_uncerts
             )  # Copying uncertainty estimates for all estimates if only singular values are provided
             # not sure that works as intended
-        if not np.shape(predictor_types)[1] == len(predictor_measurements):
+        if not np.shape(predictor_types)[0] == len(predictor_measurements):
             raise ValueError(
                 "The predictor_types input does not have the same number of columns as the predictor_measurements input.  This means it is unclear which measurement is in which column."
             )
@@ -159,6 +161,7 @@ def inverse_gaussian_wrapper(x, gamma=1, delta=1.3):
     nu = 3.4  # gamma #default 1
     lam = 1  # gamma**3 / 2 / delta**2 #default 0.29585798816568043
     y = invgauss.pdf(x, mu=nu / lam, scale=lam, loc=0)
+    y = y / y.sum()
     return y
 
 
@@ -187,7 +190,7 @@ CC░▒▓█▓▒░CCC░▒▓█▓▒░░▒▓█▓▒░▒▓█▓
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-                         Python v0.0.3 alpha
+                         Python v0.1.0 beta
                     
 Carter, B.; Sandborn D. 2025.
 MATLAB - github.com/BRCScienceProducts/TRACEv1
