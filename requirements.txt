@@ -9,3 +9,4 @@ pyyaml
 tqdm
 seawater
 gsw
+PyCO2SYS
