@@ -1,6 +1,8 @@
 # Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)
 Python version 0.1.0 (beta)
 
+[![Python application](https://github.com/d-sandborn/pyTRACE/actions/workflows/python-app.yml/badge.svg)](https://github.com/d-sandborn/pyTRACE/actions/workflows/python-app.yml)
+
 After [TRACEv1](https://github.com/BRCScienceProducts/TRACEv1) and being developed in parallel with [ESPER](https://github.com/BRCScienceProducts/ESPER) and [PyESPER](https://github.com/LarissaMDias/PyESPER).
 
 Please reference the [preprint](https://essd.copernicus.org/preprints/essd-2024-560/) and forthcoming publication on TRACEv1 for further details.
