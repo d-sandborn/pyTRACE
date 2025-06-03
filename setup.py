@@ -23,7 +23,7 @@ setup(name='pyTRACE',
           'tqdm',
           'seawater', #deprecated, kept for comparability with TRACEv1
           'gsw', #replacement for seawater
-          'PyCO2SYS'
+          'git+https://github.com/mvdh7/PyCO2SYS@v2.0.0-b2'
       ],
       classifiers=[
           'Programming Language :: Python :: 3.12',

@@ -9,4 +9,4 @@ pyyaml
 tqdm
 seawater
 gsw
-PyCO2SYS
+git+https://github.com/mvdh7/PyCO2SYS@v2.0.0-b2
