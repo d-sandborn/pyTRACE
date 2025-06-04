@@ -4,7 +4,7 @@ trace()
     Generates etimates of ocean anthropogenic carbon content from
     user-supplied inputs of coordinates (lat, lon, depth), salinity,
     temperature, and year.
-No other functions presently implemented.
+No other functions presently implemented.  
 """
 
 import sys
@@ -46,12 +46,14 @@ def trace(
     error_codes=[-999, -9, -1e20],
     canth_diseq=1,
     eos="seawater",
-    gamma=1,  # broken
-    delta=1.3,  # broken
+    delta_over_gamma=1.3,  # broken
     opt_pH_scale=1,
     opt_k_carbonic=10,  # LDK00
     opt_k_HSO4=1,  # D90a
     opt_total_borate=2,
+    preformed_p=None,
+    preformed_si=None,
+    preformed_ta=None,
 ):
     """
     Generates etimates of ocean anthropogenic carbon content from
@@ -162,17 +164,17 @@ def trace(
         the surface and interior histories of anthropogenic carbon.
         The default is 1.3.
     opt_pH_scale: int, optional
-        PyCO2SYS option for pH scale. 
+        PyCO2SYS option for pH scale.
         The default is 1.
     opt_k_carbonic: int, optional
-        PyCO2SYS option for carbonic acid dissociation constants. 
+        PyCO2SYS option for carbonic acid dissociation constants.
         The default is 10.
     opt_k_HSO4: int, optional
         PyCO2SYS option for bisulfate dissociation constant.
         The default is 1.
     opt_total_borate: int, optional
         PyCO2SYS option for borate:salinity relationship to use to estimate total borate.
-        The default is 2. 
+        The default is 2.
 
     Raises
     ------
@@ -268,16 +270,41 @@ def trace(
     dates = dates[valid_indices]
 
     # Estimate preformed properties using a neural network
-    if verbose_tf:
-        print("\nEstimating preformed properties.")
-    pref_props_sub = trace_nn(
-        [1, 2, 4],
-        C,
-        m_all,
-        np.array([1, 2]),
-        DATADIR,
-        verbose_tf=verbose_tf,
-    )
+    # Or reuse old ones
+    if (
+        (preformed_p is not None)
+        and (preformed_ta is not None)
+        and (preformed_si is not None)
+    ):
+        try:
+            pref_probs_sub = {
+                "Preformed_P": preformed_p,
+                "Preformed_Si": preformed_si,
+                "Preformed_TA": preformed_ta,
+            }
+            if verbose_tf:
+                print("\nUsing provided preformed properties.")
+        except Exception as e:
+            print("\ne\nDefaulting to estimating preformed properties.")
+            pref_props_sub = trace_nn(
+                [1, 2, 4],
+                C,
+                m_all,
+                np.array([1, 2]),
+                DATADIR,
+                verbose_tf=verbose_tf,
+            )
+    else:
+        if verbose_tf:
+            print("\nEstimating preformed properties.")
+        pref_props_sub = trace_nn(
+            [1, 2, 4],
+            C,
+            m_all,
+            np.array([1, 2]),
+            DATADIR,
+            verbose_tf=verbose_tf,
+        )
 
     # Remap the scale factors using another neural network
     if verbose_tf:
@@ -298,7 +325,7 @@ def trace(
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
 
     ventilation = inverse_gaussian_wrapper(
-        x=np.arange(0.01, 5.01, 0.01), gamma=gamma, delta=delta
+        x=np.arange(0.01, 5.01, 0.01), delta_over_gamma=delta_over_gamma
     )
 
     # Interpolate CO2 based on ventilation and atmospheric trajectory
@@ -524,30 +551,17 @@ def trace(
                     "standard_name": "uncertainty_moles_of_anthropogenic_carbon_per_unit_mass_in_sea_water",
                 },
             ),
-            gamma=(
+            delta_over_gamma=(
                 ["loc"],
                 create_vector_with_values(
                     len(output_coordinates),
                     valid_indices,
-                    gamma,
+                    delta_over_gamma,
                 ),
                 {
                     "units": 1,
-                    "long_name": "first moment of inverse gaussian distribution",
-                    "standard_name": "first_moment_of_inverse_gaussian_distribution",
-                },
-            ),
-            delta=(
-                ["loc"],
-                create_vector_with_values(
-                    len(output_coordinates),
-                    valid_indices,
-                    delta,
-                ),
-                {
-                    "units": 1,
-                    "long_name": "second moment of inverse gaussian distribution",
-                    "standard_name": "second_moment_of_inverse_gaussian_distribution",
+                    "long_name": "ratio of second to first moment of inverse gaussian distribution",
+                    "standard_name": "ratio_of_second_to_first_moment_of_inverse_gaussian_distribution",
                 },
             ),
             scale_factor=(
@@ -627,8 +641,7 @@ def trace(
                 per_kg_sw_tf=per_kg_sw_tf,
                 canth_diseq=canth_diseq,
                 eos=eos,
-                gamma=gamma,
-                delta=delta,
+                delta_over_gamma=delta_over_gamma,
             ),
         ),
     )

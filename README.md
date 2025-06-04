@@ -11,7 +11,7 @@ This code generates estimates of ocean anthropogenic carbon content from user-su
 
 ## Setup
 
-Clone TRACE to your machine or download and unzip a [release](https://github.com/d-sandborn/pyTRACE/releases).  Ensure pip is installed, preferably in a virtual environment (we suggest [this method](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html)). pyTRACE can then be installed (as an editable install) by navigating to the unzipped directory of TRACE and running the following command in a terminal emulator
+Clone TRACE to your machine or download and unzip a [release](https://github.com/d-sandborn/pyTRACE/releases).  Ensure pip and python are installed in a virtual environment (we suggest [this method](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html)). pyTRACE can then be installed (as an editable install) by navigating to the unzipped directory of TRACE and running the following command in a terminal emulator
 ```
 python -m pip install -e .
 ```
@@ -31,7 +31,7 @@ which will make available the top-level function for anthropogenic carbon estima
 ?trace
 ```
 
-To estimate anthropogenic carbon (C<sub>anth</sub>) at the surface ocean at the equator/prime meridian in the years 2000 and 2200 assuming SSP5_3.4_over:
+To estimate anthropogenic carbon (C<sub>anth</sub>) at the surface ocean at the equator/prime meridian in the years 2000 and 2200 assuming IPCC pathway SSP5_3.4_over:
 
 ```
 >>> output = trace(
@@ -70,8 +70,7 @@ Data variables:
     temperature   (loc) float64 16B 20.0 20.0
     salinity      (loc) float64 16B 35.0 35.0
     u_canth       (loc) float64 16B 8.645 12.92
-    gamma         (loc) float64 16B 1.0 1.0
-    delta         (loc) float64 16B 1.3 1.3
+    delta_over_gamma (loc) float64 16B 1.3 1.3
     scale_factor  (loc) float64 16B 0.05143 0.05143
 Attributes:
     Conventions:        CF-1.12
@@ -87,7 +86,7 @@ array([47.78685407, 79.87492991])
 
 ```
 
-This result above agrees exactly with TRACEv1, which gives C<sub>anth</sub> = ```[47.7869 79.8749]``` for the same inputs.
+This result above agrees with TRACEv1, which gives C<sub>anth</sub> = ```[47.7869 79.8749]``` for the same inputs.
 
 Calling ```trace``` without a temperature input will cause it to estimate temperature from salinity and coordinates via a neural network. This is **not** recommended, but will yield results (with a warning) as in TRACEv1:
 
@@ -124,8 +123,7 @@ Data variables:
     temperature   (loc) float64 16B 26.47 26.47
     salinity      (loc) float64 16B 35.0 35.0
     u_canth       (loc) float64 16B 9.699 11.08
-    gamma         (loc) float64 16B 1.0 1.0
-    delta         (loc) float64 16B 1.3 1.3
+    delta_over_gamma (loc) float64 16B 1.3 1.3
     scale_factor  (loc) float64 16B 0.01341 0.01341
 Attributes:
     Conventions:        CF-1.12

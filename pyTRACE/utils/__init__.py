@@ -152,7 +152,7 @@ def prepare_uncertainties(
     return default_u_all, input_u_all
 
 
-def inverse_gaussian_wrapper(x, gamma=1, delta=1.3):
+def inverse_gaussian_wrapper(x, delta_over_gamma=1.3):
     """Calculate ventilation distributions (assumed probability
     distribution). lambda should perhaps be 1/1.3 from He et al.
     Note that invgauss calls are different in pyTRACE and TRACE!
