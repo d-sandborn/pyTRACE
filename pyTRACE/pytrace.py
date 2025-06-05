@@ -175,6 +175,18 @@ def trace(
     opt_total_borate: int, optional
         PyCO2SYS option for borate:salinity relationship to use to estimate total borate.
         The default is 2.
+    preformed_p: int, optional
+        n by 1 array of preformed P. When given along with preformed_ta and preformed_si,
+        neural network estimation will be skipped. 
+        The default is None.
+    preformed_si: int, optional
+        n by 1 array of preformed Si. When given along with preformed_ta and preformed_p,
+        neural network estimation will be skipped. 
+        The default is None.
+    preformed_ta: int, optional
+        n by 1 array of preformed TA. When given along with preformed_p and preformed_si,
+        neural network estimation will be skipped. 
+        The default is None.
 
     Raises
     ------
