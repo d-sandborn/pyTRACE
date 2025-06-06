@@ -11,6 +11,7 @@ import xarray as xr
 from pyTRACE import trace
 from seawater import dpth
 import matplotlib.pyplot as plt
+
 import scienceplots
 
 import cmocean.cm as cm
@@ -91,6 +92,7 @@ output = trace(
     atm_co2_trajectory=5,
     verbose_tf=True,
 )
+
 # %%
 output_df = pd.DataFrame(
     dict(

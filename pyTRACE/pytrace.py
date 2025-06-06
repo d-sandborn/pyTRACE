@@ -27,6 +27,7 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
     say_hello,
 )
+import jax.numpy as jnp
 
 
 DATADIR = joinpath(dirname(__file__), "data")
@@ -177,15 +178,15 @@ def trace(
         The default is 2.
     preformed_p: int, optional
         n by 1 array of preformed P. When given along with preformed_ta and preformed_si,
-        neural network estimation will be skipped. 
+        neural network estimation will be skipped.
         The default is None.
     preformed_si: int, optional
         n by 1 array of preformed Si. When given along with preformed_ta and preformed_p,
-        neural network estimation will be skipped. 
+        neural network estimation will be skipped.
         The default is None.
     preformed_ta: int, optional
         n by 1 array of preformed TA. When given along with preformed_p and preformed_si,
-        neural network estimation will be skipped. 
+        neural network estimation will be skipped.
         The default is None.
 
     Raises

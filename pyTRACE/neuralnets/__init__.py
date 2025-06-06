@@ -10,6 +10,8 @@ from scipy import io
 from os.path import join as joinpath
 import pickle
 
+from numba import jit, njit
+
 from pyTRACE.utils import (
     equation_check,
     units_check,
@@ -23,9 +25,11 @@ from pyTRACE.utils import (
 )
 
 from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
+
 with warnings.catch_warnings():
-    warnings.simplefilter('ignore')
+    warnings.simplefilter("ignore")
     from seawater import ptmp, dens, pres
+
 
 def trace_nn(
     desired_variables,
@@ -38,7 +42,7 @@ def trace_nn(
     error_codes=[-999, -9, -1e20],
     per_kg_sw_tf=True,
     verbose_tf=True,
-    eos = 'seawater',
+    eos="seawater",
 ):
     """
     Implements ESPER NN estimation of properties for pyTRACE.
@@ -123,7 +127,7 @@ def trace_nn(
         Choice of seawater equation of state to use for potential
         temperature, density, and depth conversions. Available choices
         are 'seawater' (EOS-80) and 'gsw' (TEOS-10). 'seawater' will
-        be deprecated, but is kept for compatibility with TRACEv1. 
+        be deprecated, but is kept for compatibility with TRACEv1.
         The default is 'seawater'.
 
     Raises
@@ -221,30 +225,16 @@ def trace_nn(
         m = m_all[:, needed_for_property]
 
         if need_vars[1]:
-            if eos == 'seawater':
-                m[:, 1] = ptmp(
-                    m[:, 0], 
-                    m[:, 1], 
-                    pres(
-                        C[:, 2], 
-                        C[:, 1]), 
-                    0)
+            if eos == "seawater":
+                m[:, 1] = ptmp(m[:, 0], m[:, 1], pres(C[:, 2], C[:, 1]), 0)
             else:
                 m[:, 1] = pt0_from_t(
                     SA_from_SP(
-                        m[:, 0], 
-                        p_from_z(
-                            C[:, 2], 
-                            C[:, 1]
-                            ), 
-                        C[:, 0], 
-                        C[:, 1]), 
-                    m[:, 1], 
-                    p_from_z(
-                        C[:, 2], 
-                        C[:, 1]
-                        )
-                    )
+                        m[:, 0], p_from_z(C[:, 2], C[:, 1]), C[:, 0], C[:, 1]
+                    ),
+                    m[:, 1],
+                    p_from_z(C[:, 2], C[:, 1]),
+                )
 
         # Checking to see whether O2 is needed. Defining AOU and subbing in for
         # O2 if yes (see above).
@@ -253,29 +243,24 @@ def trace_nn(
 
         # Converting units to molality if they are provided as molarity.
         if not per_kg_sw_tf:
-            if eos == 'seawater':
-                densities = dens(
-                    m[:, 0], 
-                    m[:, 1], 
-                    pres(C[:, 2], 
-                        C[:, 1]
-                        )
-                    ) / 1000
+            if eos == "seawater":
+                densities = (
+                    dens(m[:, 0], m[:, 1], pres(C[:, 2], C[:, 1])) / 1000
+                )
             else:
-                densities = rho_t_exact( # avoid calculating CT
-                    SA_from_SP(
-                        m[:, 0], 
-                        p_from_z(
-                            C[:, 2], 
-                            C[:, 1]), 
-                        C[:, 0], 
-                        C[:, 1]), 
-                    m[:, 1], 
-                    p_from_z(
-                        C[:, 2], 
-                        C[:, 1]
-                        )
-                    ) / 1000
+                densities = (
+                    rho_t_exact(  # avoid calculating CT
+                        SA_from_SP(
+                            m[:, 0],
+                            p_from_z(C[:, 2], C[:, 1]),
+                            C[:, 0],
+                            C[:, 1],
+                        ),
+                        m[:, 1],
+                        p_from_z(C[:, 2], C[:, 1]),
+                    )
+                    / 1000
+                )
             m[:, 2] = m[:, 2] / densities
             m[:, 3] = m[:, 3] / densities
             m[:, 4] = m[:, 4] / densities
@@ -434,25 +419,35 @@ def trace_nn(
     return Estimates
 
 
-def mapminmax_apply(x, settings={}):
+@njit
+def mapminmax_apply(x, xoffset, gain, ymin):
     """Map Minimum and Maximum Input Processing Function"""
-    y = np.subtract(x, np.array(settings["xoffset"]).T)
-    y = np.multiply(y, np.array(settings["gain"]).T)
-    y = np.add(y, np.array(settings["ymin"]).T)
+    # y = np.subtract(x, np.array(settings["xoffset"]).T)
+    # y = np.multiply(y, np.array(settings["gain"]).T)
+    # y = np.add(y, np.array(settings["ymin"]).T)
+    y = ((x - xoffset.T) * gain.T) + ymin.T
     return y
 
 
+@njit
 def tansig_apply(n):
-    """igmoid Symmetric Transfer Function"""
+    """Sigmoid Symmetric Transfer Function"""
     return 2 / (1 + np.exp(-2 * n)) - 1
 
 
-def mapminmax_reverse(y, settings={}):
+@njit
+def mapminmax_reverse(y, xoffset, gain, ymin):
     """Map Minimum and Maximum Output Reverse-Processing Function"""
-    x = np.subtract(y, np.array(settings["ymin"]).T)
-    x = np.divide(x, np.array(settings["gain"]).T)
-    x = np.add(x, np.array(settings["xoffset"]).T)
+    # x = np.subtract(y, np.array(settings["ymin"]).T)
+    # x = np.divide(x, np.array(settings["gain"]).T)
+    # x = np.add(x, np.array(settings["xoffset"]).T)
+    x = ((y - ymin.T) / gain.T) + xoffset.T
     return x
+
+
+@njit
+def tile_n_dot(tileable, dota, dotb):
+    return tileable + np.dot(dota, dotb)
 
 
 def execute_nn(X, VName, Location, Equation, Net, DATADIR, verbose_tf=True):
@@ -464,7 +459,7 @@ def execute_nn(X, VName, Location, Equation, Net, DATADIR, verbose_tf=True):
     if VName == "Temperature":
         VName = "EstT_Temperature"
         X = X[:, 0:5]
-
+    X = np.array(X)
     dill = dill[
         "TRACE_"
         + VName
@@ -476,13 +471,21 @@ def execute_nn(X, VName, Location, Equation, Net, DATADIR, verbose_tf=True):
         + str(Net + 1)
     ]
     x1_step1 = dill[0]
-    b1 = dill[1]
-    IW1_1 = dill[2]
+    b1 = np.array(dill[1], dtype=np.float64)
+    IW1_1 = np.array(dill[2], dtype=np.float64)
     b2 = dill[3]
-    LW2_1 = dill[4]
-    b3 = dill[5]
-    LW3_2 = dill[6]
+    LW2_1 = np.array(dill[4], dtype=np.float64)
+    b3 = np.array([[dill[5]]], dtype=np.float64)
+    LW3_2 = np.array(dill[6], dtype=np.float64)
     y1_step1 = dill[7]
+
+    x1_step1xoffset = np.array(x1_step1["xoffset"])
+    x1_step1gain = np.array(x1_step1["gain"])
+    x1_step1ymin = np.array(x1_step1["ymin"])
+
+    y1_step1ymin = np.array(y1_step1["ymin"])
+    y1_step1ygain = np.array(y1_step1["gain"])
+    y1_step1xoffset = np.array(y1_step1["xoffset"])
 
     TS = len(X)
     if len(X) != 0:
@@ -494,15 +497,23 @@ def execute_nn(X, VName, Location, Equation, Net, DATADIR, verbose_tf=True):
         range(TS), disable=(not verbose_tf), leave=False, desc="Locations"
     ):
         if Net == 0:
-            Xp1 = mapminmax_apply(X[ts], x1_step1)
-            a1 = tansig_apply(np.tile(b1, (1, Q)) + np.dot(IW1_1, Xp1.T))
-            a2 = np.tile(b2, (1, Q)) + np.dot(LW2_1, a1)
-            Y[ts] = mapminmax_reverse(a2, y1_step1)[0][0]
+            Xp1 = mapminmax_apply(
+                X[ts], x1_step1xoffset, x1_step1gain, x1_step1ymin
+            )
+            a1 = tansig_apply(tile_n_dot(b1, IW1_1, Xp1.T))
+            a2 = tile_n_dot(np.array([[b2]]), LW2_1, a1)
+            Y[ts] = mapminmax_reverse(
+                a2, y1_step1xoffset, y1_step1ygain, y1_step1ymin
+            )[0][0]
         else:
-            Xp1 = mapminmax_apply(X[ts], x1_step1)
-            a1 = tansig_apply(np.tile(b1, (1, Q)) + np.dot(IW1_1, Xp1.T))
-            a2 = tansig_apply(np.tile(b2, (1, Q)) + np.dot(LW2_1, a1))
-            a3 = np.tile(b3, (1, Q)) + np.dot(LW3_2, a2)
-            Y[ts] = mapminmax_reverse(a3, y1_step1)[0][0]
+            Xp1 = mapminmax_apply(
+                X[ts], x1_step1xoffset, x1_step1gain, x1_step1ymin
+            )
+            a1 = tansig_apply(tile_n_dot(b1, IW1_1, Xp1.T))
+            a2 = tansig_apply(tile_n_dot(np.array(b2), LW2_1, a1))
+            a3 = tile_n_dot(b3, LW3_2, a2)
+            Y[ts] = mapminmax_reverse(
+                a3, y1_step1xoffset, y1_step1ygain, y1_step1ymin
+            )[0][0]
 
     return Y

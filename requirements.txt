@@ -10,3 +10,4 @@ tqdm
 seawater
 gsw
 git+https://github.com/mvdh7/PyCO2SYS@v2.0.0-b2
+numba
