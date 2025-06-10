@@ -290,7 +290,7 @@ def trace(
         and (preformed_si is not None)
     ):
         try:
-            pref_probs_sub = {
+            pref_props_sub = {
                 "Preformed_P": preformed_p,
                 "Preformed_Si": preformed_si,
                 "Preformed_TA": preformed_ta,
