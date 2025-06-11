@@ -55,6 +55,7 @@ def trace(
     preformed_p=None,
     preformed_si=None,
     preformed_ta=None,
+    scale_factors=None,
 ):
     """
     Generates etimates of ocean anthropogenic carbon content from
@@ -176,17 +177,21 @@ def trace(
     opt_total_borate: int, optional
         PyCO2SYS option for borate:salinity relationship to use to estimate total borate.
         The default is 2.
-    preformed_p: int, optional
+    preformed_p: numpy.ndarray, optional
         n by 1 array of preformed P. When given along with preformed_ta and preformed_si,
         neural network estimation will be skipped.
         The default is None.
-    preformed_si: int, optional
+    preformed_si: numpy.ndarray, optional
         n by 1 array of preformed Si. When given along with preformed_ta and preformed_p,
         neural network estimation will be skipped.
         The default is None.
-    preformed_ta: int, optional
+    preformed_ta: numpy.ndarray, optional
         n by 1 array of preformed TA. When given along with preformed_p and preformed_si,
         neural network estimation will be skipped.
+        The default is None.
+    scale_factors: numpy.ndarray, optional
+        n by 1 array of scale factors for the inverse gaussian parameterization. When 
+        given neural network estimation will be skipped.
         The default is None.
 
     Raises
@@ -212,9 +217,9 @@ def trace(
     # PyTRACE requires non-NaN coordinates to provide an estimate.  This step
     # eliminates NaN coordinate combinations prior to estimation.  NaN estimates
     # will be returned for these coordinates.
-    # nan_grid_coords = np.any(np.isnan(output_coordinates), axis=1) or np.isnan(dates)  # WHAT??
     valid_indices = ~np.logical_or(
         np.isnan(output_coordinates).any(axis=1).reshape(-1, 1),
+        np.isnan(predictor_measurements).all(axis=1).reshape(-1, 1), #True if both S and T are present
         np.isnan(dates).reshape(-1, 1),
     )
     valid_indices = np.argwhere(valid_indices > 0)[:, 0]
@@ -283,17 +288,17 @@ def trace(
     dates = dates[valid_indices]
 
     # Estimate preformed properties using a neural network
-    # Or reuse old ones
+    # or reuse old ones
     if (
         (preformed_p is not None)
         and (preformed_ta is not None)
         and (preformed_si is not None)
     ):
         try:
-            pref_props_sub = {
-                "Preformed_P": preformed_p,
-                "Preformed_Si": preformed_si,
-                "Preformed_TA": preformed_ta,
+            pref_props_sub = { #eliminates indices without all req'd info
+                "Preformed_P": preformed_p[valid_indices],
+                "Preformed_Si": preformed_si[valid_indices],
+                "Preformed_TA": preformed_ta[valid_indices],
             }
             if verbose_tf:
                 print("\nUsing provided preformed properties.")
@@ -320,6 +325,19 @@ def trace(
         )
 
     # Remap the scale factors using another neural network
+    # or reuse old ones
+    if (scale_factors is not None):
+        try:
+            sfs = { #eliminates indices without all req'd info
+                "SFs": scale_factors[valid_indices]
+            }
+            if verbose_tf:
+                print("\nUsing provided scale factors.")
+        except Exception as e:
+            print("\ne\nDefaulting to estimating preformed properties.")
+            sfs = trace_nn(
+                [6], C, m_all, np.array([1, 2]), DATADIR, verbose_tf=verbose_tf
+            )
     if verbose_tf:
         print("\nEstimating scale factors.")
     sfs = trace_nn(
