@@ -27,7 +27,6 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
     say_hello,
 )
-import jax.numpy as jnp
 
 
 DATADIR = joinpath(dirname(__file__), "data")
