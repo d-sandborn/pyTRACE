@@ -339,11 +339,12 @@ def trace(
             sfs = trace_nn(
                 [6], C, m_all, np.array([1, 2]), DATADIR, verbose_tf=verbose_tf
             )
-    if verbose_tf:
-        print("\nEstimating scale factors.")
-    sfs = trace_nn(
-        [6], C, m_all, np.array([1, 2]), DATADIR, verbose_tf=verbose_tf
-    )
+    else:
+        if verbose_tf:
+            print("\nEstimating scale factors.")
+        sfs = trace_nn(
+            [6], C, m_all, np.array([1, 2]), DATADIR, verbose_tf=verbose_tf
+        )
 
     # Load CO2 history
     # Note, this history has been modified to
