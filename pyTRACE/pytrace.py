@@ -4,7 +4,7 @@ trace()
     Generates etimates of ocean anthropogenic carbon content from
     user-supplied inputs of coordinates (lat, lon, depth), salinity,
     temperature, and year.
-No other functions presently implemented.  
+No other functions presently implemented.
 """
 
 import sys
@@ -189,7 +189,7 @@ def trace(
         neural network estimation will be skipped.
         The default is None.
     scale_factors: numpy.ndarray, optional
-        n by 1 array of scale factors for the inverse gaussian parameterization. When 
+        n by 1 array of scale factors for the inverse gaussian parameterization. When
         given neural network estimation will be skipped.
         The default is None.
 
@@ -218,7 +218,9 @@ def trace(
     # will be returned for these coordinates.
     valid_indices = ~np.logical_or(
         np.isnan(output_coordinates).any(axis=1).reshape(-1, 1),
-        np.isnan(predictor_measurements).all(axis=1).reshape(-1, 1), #True if both S and T are present
+        np.isnan(predictor_measurements)
+        .all(axis=1)
+        .reshape(-1, 1),  # True if both S and T are present
         np.isnan(dates).reshape(-1, 1),
     )
     valid_indices = np.argwhere(valid_indices > 0)[:, 0]
@@ -294,7 +296,7 @@ def trace(
         and (preformed_si is not None)
     ):
         try:
-            pref_props_sub = { #eliminates indices without all req'd info
+            pref_props_sub = {  # eliminates indices without all req'd info
                 "Preformed_P": preformed_p[valid_indices],
                 "Preformed_Si": preformed_si[valid_indices],
                 "Preformed_TA": preformed_ta[valid_indices],
@@ -325,15 +327,15 @@ def trace(
 
     # Remap the scale factors using another neural network
     # or reuse old ones
-    if (scale_factors is not None):
+    if scale_factors is not None:
         try:
-            sfs = { #eliminates indices without all req'd info
+            sfs = {  # eliminates indices without all req'd info
                 "SFs": scale_factors[valid_indices]
             }
             if verbose_tf:
                 print("\nUsing provided scale factors.")
         except Exception as e:
-            print("\ne\nDefaulting to estimating preformed properties.")
+            print("\ne\nDefaulting to estimating scale factors.")
             sfs = trace_nn(
                 [6], C, m_all, np.array([1, 2]), DATADIR, verbose_tf=verbose_tf
             )
@@ -350,6 +352,11 @@ def trace(
     # value. "Adjusted" can be deleted in the following line to use the
     # original atmospheric values.  If this approach is used, then users should
     # consider altering CanthDiseq below to modulate the degree of equilibrium.
+    if verbose_tf:
+        print(
+            "\nLoading CO2 History:"
+            + joinpath(DATADIR, "CO2TrajectoriesAdjusted.txt")
+        )
     co2_rec = np.loadtxt(joinpath(DATADIR, "CO2TrajectoriesAdjusted.txt"))
     co2_rec = np.vstack([co2_rec[0, :], co2_rec])  # redundant??
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
@@ -594,7 +601,7 @@ def trace(
                     "standard_name": "ratio_of_second_to_first_moment_of_inverse_gaussian_distribution",
                 },
             ),
-            scale_factor=(
+            scale_factors=(
                 ["loc"],
                 create_vector_with_values(
                     len(output_coordinates),
@@ -603,8 +610,8 @@ def trace(
                 ),
                 {
                     "units": 1,
-                    "long_name": "scaling factor of inverse gaussian distribution",
-                    "standard_name": "scaling_factor_of_inverse_gaussian_distribution",
+                    "long_name": "scaling factors of inverse gaussian distribution",
+                    "standard_name": "scaling_factors_of_inverse_gaussian_distribution",
                 },
             ),
         ),
