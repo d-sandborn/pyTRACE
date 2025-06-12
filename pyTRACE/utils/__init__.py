@@ -7,6 +7,10 @@ from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     from seawater import ptmp, dens, pres
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
+import geopandas as gpd
+import pandas as pd
 
 
 def equation_check(equation):
@@ -166,14 +170,25 @@ def inverse_gaussian_wrapper(x, delta_over_gamma=1.3):
 
 
 def inpolygon(xq, yq, xv, yv):
-    """Probably checks if points in polygon."""
-    try:
-        points = np.array([xq, yq]).T
-        path = np.array([xv, yv]).T
-        tri = Delaunay(path)
-        return tri.find_simplex(points) >= 0
-    except:
-        return np.array([False] * len(xq))
+    """New test for points in polygon. Old code below."""
+    polygon_geom = Polygon(zip(xv, yv))
+    polygon = gpd.GeoDataFrame(
+        index=[0], crs="epsg:4326", geometry=[polygon_geom]
+    )
+    df = pd.DataFrame({"lon": xq, "lat": yq})
+    geo = gpd.points_from_xy(xq, yq)
+    points = gpd.GeoDataFrame(geometry=geo, crs=polygon.crs)
+    pointInPolys = points.intersects(polygon.union_all())
+    return pointInPolys
+
+
+# try: #this mistakenly identifies points within convex boundaries
+#    points = np.array([xq, yq]).T
+#    path = np.array([xv, yv]).T
+#    tri = Delaunay(path)
+#    return tri.find_simplex(points) >= 0
+# except:
+#    return np.array([False] * len(xq))
 
 
 def say_hello():
