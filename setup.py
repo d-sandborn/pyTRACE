@@ -24,7 +24,9 @@ setup(name='pyTRACE',
           'seawater', #deprecated, kept for comparability with TRACEv1
           'gsw', #replacement for seawater
           'PyCO2SYS @ git+https://github.com/mvdh7/PyCO2SYS@v2.0.0-b2',
-          'numba'
+          'numba',
+          'shapely',
+          'geopandas'
       ],
       classifiers=[
           'Programming Language :: Python :: 3.12',
