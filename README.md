@@ -11,7 +11,7 @@ This code generates estimates of ocean anthropogenic carbon content from user-su
 ## Setup
 
 Clone TRACE to your machine or download and unzip a [release](https://github.com/d-sandborn/pyTRACE/releases).  Ensure pip and python are installed in a virtual environment (we suggest [this method](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html)). pyTRACE can then be installed (as an editable install) by navigating to the unzipped directory of TRACE and running the following command in a terminal emulator
-```
+```bash
 python -m pip install -e .
 ```
 TRACE is not yet available via pypy or conda, but this is a target for future development if interest warrants it. Additionally, PyCO2SYS >= v2 is required for speed and stability purposes. Instructions to install the newest public beta for that package can be found [here](https://mvdh.xyz/PyCO2SYS/).
@@ -20,32 +20,32 @@ TRACE is not yet available via pypy or conda, but this is a target for future de
 
 Call TRACE within a Python script or iPython console by running 
 
-```
+```python
 from pyTRACE import trace
 ```
 
 which will make available the top-level function for anthropogenic carbon estimation. For details on its input and output parameters, run
 
-```
+```python
 ?trace
 ```
 
 To estimate anthropogenic carbon (C<sub>anth</sub>) at the surface ocean at the equator/prime meridian in the years 2000 and 2200 assuming IPCC pathway SSP5_3.4_over:
 
-```
->>> output = trace(
-        output_coordinates=np.array([[0, 0, 0], [0, 0, 0]]),
-        dates=np.array([2000, 2200]),
-        predictor_measurements=np.array([[35, 20], [35, 20]]),
-        predictor_types=np.array([1, 2]),
-        atm_co2_trajectory=9
-    )
+```python
+output = trace(
+    output_coordinates=np.array([[0, 0, 0], [0, 0, 0]]),
+    dates=np.array([2000, 2200]),
+    predictor_measurements=np.array([[35, 20], [35, 20]]),
+    predictor_types=np.array([1, 2]),
+    atm_co2_trajectory=9
+)
 ```
 
 which returns an [xarray dataset](https://docs.xarray.dev/en/latest/generated/xarray.Dataset.html) containing C<sub>anth</sub> at the specified dates and times, its uncertainties, and associated metadata. More examples can be found in the ```demos``` folder. Attributes of the [CF-compliant](https://cfconventions.org/) dataset describe the variables and their units.
 
-```
->>> output
+```python
+output
 
 <xarray.Dataset> Size: 320B
 Dimensions:       (loc: 2)
@@ -79,7 +79,7 @@ Attributes:
     co2sys_parameters:  {'pressure': 0, 'opt_pH_scale': 1, 'opt_k_carbonic': ...
     trace_parameters:   {'meas_uncerts': None, 'per_kg_sw_tf': True, 'canth_d...
 
->>> output.canth.data
+output.canth.data
 
 array([47.78685407, 79.87492991])
 
@@ -89,14 +89,14 @@ This result above agrees with TRACEv1, which gives C<sub>anth</sub> = ```[47.786
 
 Calling ```trace``` without a temperature input will cause it to estimate temperature from salinity and coordinates via a neural network. This is **not** recommended, but will yield results (with a warning) as in TRACEv1:
 
-```
->>> trace(
-         output_coordinates=np.array([[0, 0, 0], [0, 0, 0]]),
-         dates=np.array([2000, 2010]),
-         predictor_measurements=np.array([[35], [35]]),
-         predictor_types=np.array([1]),
-         atm_co2_trajectory=9
-    )
+```python
+trace(
+    output_coordinates=np.array([[0, 0, 0], [0, 0, 0]]),
+    dates=np.array([2000, 2010]),
+    predictor_measurements=np.array([[35], [35]]),
+    predictor_types=np.array([1]),
+    atm_co2_trajectory=9
+)
 
 UserWarning: Temperature is being estimated from salinity and coordinate information.
 
@@ -131,7 +131,7 @@ Attributes:
     references:         doi.org/10.5194/essd-2024-560
     co2sys_parameters:  {'pressure': 0, 'opt_pH_scale': 1, 'opt_k_carbonic': ...
     trace_parameters:   {'meas_uncerts': None, 'per_kg_sw_tf': True, 'canth_d...
->>> output.canth.data
+output.canth.data
 
 array([56.059132, 66.45668126])
 
