@@ -38,23 +38,24 @@ def trace(
     predictor_measurements,
     predictor_types,
     atm_co2_trajectory,
-    preindustrial_xco2=280,
+    preindustrial_xco2: float = 280.0,
     equations=[1],
     meas_uncerts=None,
-    per_kg_sw_tf=True,
+    per_kg_sw_tf: bool = True,
     verbose_tf=True,
-    error_codes=[-999, -9, -1e20],
-    canth_diseq=1,
-    eos="seawater",
+    error_codes: list = [-999, -9, -1e20],
+    canth_diseq: float = 1.0,
+    eos: str = "seawater",
     delta_over_gamma=1.3,  # broken
-    opt_pH_scale=1,
-    opt_k_carbonic=10,  # LDK00
-    opt_k_HSO4=1,  # D90a
-    opt_total_borate=2,
+    opt_pH_scale: int = 1,
+    opt_k_carbonic: int = 10,  # LDK00
+    opt_k_HSO4: int = 1,  # D90a
+    opt_total_borate: int = 2,
     preformed_p=None,
     preformed_si=None,
     preformed_ta=None,
     scale_factors=None,
+    output_filename: str = None,
 ):
     """
     Generates etimates of ocean anthropogenic carbon content from
@@ -191,6 +192,11 @@ def trace(
     scale_factors: numpy.ndarray, optional
         n by 1 array of scale factors for the inverse gaussian parameterization. When
         given neural network estimation will be skipped.
+        The default is None.
+    output_filename: str, optional
+        filename for TRACE output to be saved in current working directory.
+        If no filename is given, no file will be saved. Presently only NETCDF4
+        (.nc) files can be saved.
         The default is None.
 
     Raises
@@ -668,22 +674,17 @@ def trace(
             description="Results of Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) version 0.1.0 (beta)",
             history=str(datetime.datetime.now()) + " " + sys.version,
             references="doi.org/10.5194/essd-2024-560",
-            co2sys_parameters=dict(
-                opt_pH_scale=opt_pH_scale,
-                opt_k_carbonic=opt_k_carbonic,  # LDK00
-                opt_k_HSO4=opt_k_HSO4,  # D90a
-                opt_total_borate=opt_total_borate,
-            ),
-            trace_parameters=dict(
-                meas_uncerts=meas_uncerts,
-                per_kg_sw_tf=per_kg_sw_tf,
-                canth_diseq=canth_diseq,
-                eos=eos,
-                delta_over_gamma=delta_over_gamma,
-            ),
+            co2sys_parameters=f"opt_pH_scale: {opt_pH_scale}, opt_k_carbonic: {opt_k_HSO4}, opt_k_HSO4: {opt_k_HSO4}, opt_total_borate: {opt_total_borate}",
+            trace_parameters=f"per_kg_sw_tf: {per_kg_sw_tf}, canth_diseq: {canth_diseq}, eos: {eos}, delta_over_gamma: {delta_over_gamma}",
         ),
     )
     # Return results
     if verbose_tf:
         print("\nTRACE completed.")
+    if output_filename is not None:
+        try:
+            output.to_netcdf(output_filename)
+        except Exception as e:
+            print("File " + output_filename + " could not be saved")
+            print(e)
     return output

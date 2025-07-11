@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Apr  7 13:29:39 2025
-
-@author: des
+Demonstration of TRACE applied to GO-SHIP A16 bottle files
+obtained from CCHDO.
 """
 import pandas as pd
 import numpy as np
@@ -11,19 +10,9 @@ import xarray as xr
 from pyTRACE import trace
 from seawater import dpth
 import matplotlib.pyplot as plt
-
 import scienceplots
-
 import cmocean.cm as cm
 from scipy.interpolate import griddata
-from sklearn.neighbors import LocalOutlierFactor
-
-from matplotlib.tri import (
-    TriAnalyzer,
-    Triangulation,
-    UniformTriRefiner,
-    LinearTriInterpolator,
-)
 
 plt.style.use("science")
 a16n = xr.open_dataset("33RO20130803_bottle.nc")
