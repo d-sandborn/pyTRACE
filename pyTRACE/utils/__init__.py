@@ -1,5 +1,6 @@
 import numpy as np
 import warnings
+import datetime
 from scipy.stats import invgauss
 from scipy.spatial import Delaunay
 from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
@@ -211,3 +212,43 @@ Carter, B.; Sandborn D. 2025.
 MATLAB - github.com/BRCScienceProducts/TRACEv1
 Python - github.com/d-sandborn/pyTRACE"""
     )
+
+
+def decimal_year_to_iso_timestamp(  # for CF Conventions
+    decimal_year_input: np.ndarray | float,
+) -> np.ndarray | str:
+    def _convert_single_decimal_year(decimal_year: float) -> str:
+        if np.isnan(decimal_year):
+            return "NaT"
+        year = int(decimal_year)
+        fraction = decimal_year - year
+
+        days_in_year = (
+            366
+            if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+            else 365
+        )
+
+        total_seconds_in_year = days_in_year * 24 * 60 * 60
+        offset_seconds = fraction * total_seconds_in_year
+
+        start_of_year_utc = datetime.datetime(
+            year, 1, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc
+        )
+
+        dt_object_utc = start_of_year_utc + datetime.timedelta(
+            seconds=offset_seconds
+        )
+
+        iso_timestamp = dt_object_utc.isoformat(timespec="seconds").replace(
+            "+00:00", "Z"
+        )
+        return iso_timestamp
+
+    if isinstance(decimal_year_input, np.ndarray):
+        vectorized_converter = np.vectorize(
+            _convert_single_decimal_year, otypes=[str]
+        )
+        return vectorized_converter(decimal_year_input)
+    else:
+        return _convert_single_decimal_year(decimal_year_input)

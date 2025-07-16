@@ -9,9 +9,7 @@ import os
 from scipy import io
 from os.path import join as joinpath
 import pickle
-
 from numba import jit, njit
-
 from pyTRACE.utils import (
     equation_check,
     units_check,
@@ -23,7 +21,6 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
     inpolygon,
 )
-
 from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
 
 with warnings.catch_warnings():
@@ -335,8 +332,10 @@ def trace_nn(
                 )
 
         # Averaging across neural network committee members
-        est_atl = np.nanmean(est_atl, axis=1)
-        est_other = np.nanmean(est_other, axis=1)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+            est_atl = np.nanmean(est_atl, axis=1)
+            est_other = np.nanmean(est_other, axis=1)
 
         # We do not want information to propagate across the Panama Canal
         # (for instance), so data is carved into two segments... the

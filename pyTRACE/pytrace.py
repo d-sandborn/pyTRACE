@@ -26,6 +26,7 @@ from pyTRACE.utils import (
     prepare_uncertainties,
     inverse_gaussian_wrapper,
     say_hello,
+    decimal_year_to_iso_timestamp,
 )
 
 
@@ -445,10 +446,9 @@ def trace(
                     len(output_coordinates), valid_indices, canth_sub
                 ),
                 {
-                    "units": "micro_mol_carbon_per_kg",
+                    "units": "micromole kg-1",
                     "long_name": "anthropogenic carbon",
                     "standard_name": "moles_of_anthropogenic_carbon_per_unit_mass_in_sea_water",
-                    "ancillary_variables": "canth",
                 },
             ),
             mean_age=(
@@ -479,7 +479,7 @@ def trace(
                     len(output_coordinates), valid_indices, out
                 ),
                 {
-                    "units": "micro_mol_carbon_per_kg",
+                    "units": "micromole kg-1",
                     "long_name": "dissolved inorganic carbon",
                     "standard_name": "moles_of_dissolved_inorganic_carbon_per_unit_mass_in_sea_water",
                 },
@@ -490,7 +490,7 @@ def trace(
                     len(output_coordinates), valid_indices, out_ref
                 ),
                 {
-                    "units": "micro_mol_carbon_per_kg",
+                    "units": "micromole kg-1",
                     "long_name": "preindustrial dissolved inorganic carbon",
                     "standard_name": "preindustrial_moles_of_dissolved_inorganic_carbon_per_unit_mass_in_sea_water",
                 },
@@ -503,9 +503,9 @@ def trace(
                     vpfac * (canth_diseq * (co2_set.T - 280) + 280),
                 ),
                 {
-                    "units": "micro_atm",
+                    "units": "microatmosphere",
                     "long_name": "partial pressure of carbon dioxide",
-                    "standard_name": "partial_pressure_of_carbon_dioxide_in_sea_water",
+                    "standard_nme": "partial_pressure_of_carbon_dioxide_in_sea_water",
                 },
             ),
             pco2_ref=(
@@ -516,7 +516,7 @@ def trace(
                     preindustrial_xco2 * vpfac,
                 ),
                 {
-                    "units": "micro_atm",
+                    "units": "microatmosphere",
                     "long_name": "preindustrial partial pressure of carbon dioxide",
                     "standard_name": "preindustrial_partial_pressure_of_carbon_dioxide_in_sea_water",
                 },
@@ -529,7 +529,7 @@ def trace(
                     pref_props_sub["Preformed_TA"],
                 ),
                 {
-                    "units": "micro_mol_per_kg",
+                    "units": "micromole kg-1",
                     "long_name": "preformed alkalinity",
                     "standard_name": "sea_water_preformed_alkalinity_per_unit_mass_expressed_as_mole_equivalent",
                 },
@@ -542,7 +542,7 @@ def trace(
                     pref_props_sub["Preformed_Si"],
                 ),
                 {
-                    "units": "micro_mol_per_kg",
+                    "units": "micromole kg-1",
                     "long_name": "preformed total silicate",
                     "standard_name": "moles_of_silicate_per_unit_mass_in_sea_water",
                 },
@@ -555,7 +555,7 @@ def trace(
                     pref_props_sub["Preformed_P"],
                 ),
                 {
-                    "units": "micro_mol_per_kg",
+                    "units": "micromole kg-1",
                     "long_name": "preformed total phosphate",
                     "standard_name": "moles_of_phosphate_per_unit_mass_in_sea_water",
                 },
@@ -566,7 +566,7 @@ def trace(
                     len(output_coordinates), valid_indices, m_all[:, 1]
                 ),
                 {
-                    "units": "degree_C",
+                    "units": "degree_Celsius",
                     "long_name": "in-situ temperature",
                     "standard_name": "sea_water_temperature",
                 },
@@ -577,8 +577,8 @@ def trace(
                     len(output_coordinates), valid_indices, m_all[:, 0]
                 ),
                 {
-                    "units": 1,
-                    "long_name": "spractical alinity",
+                    "units": "1",
+                    "long_name": "practical salinity",
                     "standard_name": "sea_water_practical_salinity",
                 },
             ),
@@ -590,7 +590,7 @@ def trace(
                     np.sqrt(4.4**2 + 2**2 + (0.15 * canth_sub) ** 2),
                 ),
                 {
-                    "units": "micro_mol_carbon_per_kg",
+                    "units": "micromole kg-1",
                     "long_name": "estimated uncertainty of anthropogenic carbon",
                     "standard_name": "uncertainty_moles_of_anthropogenic_carbon_per_unit_mass_in_sea_water",
                 },
@@ -603,7 +603,7 @@ def trace(
                     delta_over_gamma,
                 ),
                 {
-                    "units": 1,
+                    "units": "1",
                     "long_name": "ratio of second to first moment of inverse gaussian distribution",
                     "standard_name": "ratio_of_second_to_first_moment_of_inverse_gaussian_distribution",
                 },
@@ -616,22 +616,27 @@ def trace(
                     sfs["SFs"],
                 ),
                 {
-                    "units": 1,
+                    "units": "1",
                     "long_name": "scaling factors of inverse gaussian distribution",
                     "standard_name": "scaling_factors_of_inverse_gaussian_distribution",
                 },
             ),
         ),
         coords=dict(
-            year=(
+            year=(  # make cftime-decodable
                 ["loc"],
-                create_vector_with_values(
-                    len(output_coordinates), valid_indices, dates
+                decimal_year_to_iso_timestamp(
+                    create_vector_with_values(
+                        len(output_coordinates),
+                        valid_indices,
+                        dates,
+                    )
                 ),
                 {
-                    "units": "years since 1-1-1 0:0:0",
-                    "long_name": "calendar year c.e.",
-                    "standard_name": "year_common_era",
+                    "units": "days since 0001-01-01 00:00:00",
+                    "long_name": "year",
+                    "standard_name": "year",
+                    "calendar": "proleptic_gregorian",
                 },
             ),
             lon=(
@@ -641,7 +646,7 @@ def trace(
                     "units": "degrees_east",
                     "long_name": "longitude",
                     "standard_name": "longitude",
-                    "valid_min": -360,  # I think
+                    "valid_min": -360,
                     "valid_max": 360,
                 },
             ),
@@ -670,9 +675,13 @@ def trace(
             ),
         ),
         attrs=dict(
-            Conventions="CF-1.12",
-            description="Results of Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) version 0.1.0 (beta)",
-            history=str(datetime.datetime.now()) + " " + sys.version,
+            Conventions="CF-1.10",
+            description="Results of Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)",
+            history="TRACE version 0.2.0 (beta)"
+            + str(datetime.datetime.now())
+            + " "
+            + sys.version,
+            date_created=str(datetime.datetime.now()),
             references="doi.org/10.5194/essd-2024-560",
             co2sys_parameters=f"opt_pH_scale: {opt_pH_scale}, opt_k_carbonic: {opt_k_HSO4}, opt_k_HSO4: {opt_k_HSO4}, opt_total_borate: {opt_total_borate}",
             trace_parameters=f"per_kg_sw_tf: {per_kg_sw_tf}, canth_diseq: {canth_diseq}, eos: {eos}, delta_over_gamma: {delta_over_gamma}",
