@@ -28,6 +28,7 @@ from pyTRACE.utils import (
     say_hello,
     decimal_year_to_iso_timestamp,
 )
+import platform
 
 
 DATADIR = joinpath(dirname(__file__), "data")
@@ -677,10 +678,12 @@ def trace(
         attrs=dict(
             Conventions="CF-1.10",
             description="Results of Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)",
-            history="TRACE version 0.2.0 (beta)"
+            history="TRACE version 0.2.0 (beta), "
             + str(datetime.datetime.now())
+            + " Python "
+            + sys.version
             + " "
-            + sys.version,
+            + platform.platform(),
             date_created=str(datetime.datetime.now()),
             references="doi.org/10.5194/essd-2024-560",
             co2sys_parameters=f"opt_pH_scale: {opt_pH_scale}, opt_k_carbonic: {opt_k_HSO4}, opt_k_HSO4: {opt_k_HSO4}, opt_total_borate: {opt_total_borate}",

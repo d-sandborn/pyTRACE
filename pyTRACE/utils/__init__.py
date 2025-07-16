@@ -2,16 +2,18 @@ import numpy as np
 import warnings
 import datetime
 from scipy.stats import invgauss
-from scipy.spatial import Delaunay
+
+# from scipy.spatial import Delaunay
 from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     from seawater import ptmp, dens, pres
-from shapely.geometry import Point
+# from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import geopandas as gpd
-import pandas as pd
+
+# import pandas as pd
 
 
 def equation_check(equation):
@@ -35,8 +37,6 @@ def equation_check(equation):
 def units_check(per_kg_sw_tf):
     """Check for per_kg_sw_tf input and setting default if not given.
     This input is not needed for TRACE, currently."""
-    # Checking for per_kg_sw_tf input and setting default if not given. This
-    # input is not needed for TRACE, currently
     if not per_kg_sw_tf:
         warnings.warn(
             "Optional argument per_kg_sw_tf is not in use. Setting to True."
@@ -176,7 +176,7 @@ def inpolygon(xq, yq, xv, yv):
     polygon = gpd.GeoDataFrame(
         index=[0], crs="epsg:4326", geometry=[polygon_geom]
     )
-    df = pd.DataFrame({"lon": xq, "lat": yq})
+    # df = pd.DataFrame({"lon": xq, "lat": yq})
     geo = gpd.points_from_xy(xq, yq)
     points = gpd.GeoDataFrame(geometry=geo, crs=polygon.crs)
     pointInPolys = points.intersects(polygon.union_all())
