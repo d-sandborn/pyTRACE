@@ -292,8 +292,6 @@ def trace(
     u_all[:, predictor_types - 1] = input_u_all[:, predictor_types]
 
     # Reshape Dates if necessary
-    # if dates.ndim == 1:
-    #    dates = np.tile(dates, (len(output_coordinates), 1))
     dates = dates[valid_indices]
 
     # Estimate preformed properties using a neural network
@@ -686,7 +684,7 @@ def trace(
             + platform.platform(),
             date_created=str(datetime.datetime.now()),
             references="doi.org/10.5194/essd-2024-560",
-            co2sys_parameters=f"opt_pH_scale: {opt_pH_scale}, opt_k_carbonic: {opt_k_HSO4}, opt_k_HSO4: {opt_k_HSO4}, opt_total_borate: {opt_total_borate}",
+            co2sys_parameters=f"opt_pH_scale: {opt_pH_scale}, opt_k_carbonic: {opt_k_carbonic}, opt_k_HSO4: {opt_k_HSO4}, opt_total_borate: {opt_total_borate}",
             trace_parameters=f"per_kg_sw_tf: {per_kg_sw_tf}, canth_diseq: {canth_diseq}, eos: {eos}, delta_over_gamma: {delta_over_gamma}",
         ),
     )

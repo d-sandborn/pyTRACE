@@ -1,5 +1,5 @@
 # Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)
-Python version 0.2.0 (beta)
+Python version 0.2-.0 (beta)
 
 [![Python application](https://github.com/d-sandborn/pyTRACE/actions/workflows/python-app.yml/badge.svg)](https://github.com/d-sandborn/pyTRACE/actions/workflows/python-app.yml) 
 [![DOI](https://zenodo.org/badge/931694885.svg)](https://doi.org/10.5281/zenodo.15597122)
@@ -47,37 +47,36 @@ which returns an [xarray dataset](https://docs.xarray.dev/en/latest/generated/xa
 ```python
 output
 
-<xarray.Dataset> Size: 320B
-Dimensions:       (loc: 2)
+<xarray.Dataset> Size: 448B
+Dimensions:           (loc: 2)
 Coordinates:
-    year          (loc) float64 16B 2e+03 2.2e+03
-    lon           (loc) int64 16B 0 0
-    lat           (loc) int64 16B 0 0
-    depth         (loc) int64 16B 0 0
+    year              (loc) <U20 160B '2000-01-01T00:00:00Z' '2200-01-01T00:0...
+    lon               (loc) int64 16B 0 0
+    lat               (loc) int64 16B 0 0
+    depth             (loc) int64 16B 0 0
 Dimensions without coordinates: loc
-Data variables:
-    canth         (loc) float64 16B 47.79 79.87
-    mean_age      (loc) float64 16B 7.224 7.224
-    mode_age      (loc) float64 16B 1.697 1.697
-    dic           (loc) float64 16B 1.994e+03 2.026e+03
-    dic_ref       (loc) float64 16B 1.946e+03 1.946e+03
-    pco2          (loc) float64 16B 325.1 380.7
-    pco2_ref      (loc) float64 16B 260.0 260.0
-    preformed_ta  (loc) float64 16B 2.296e+03 2.296e+03
-    preformed_si  (loc) float64 16B 2.167 2.167
-    preformed_p   (loc) float64 16B 0.5108 0.5108
-    temperature   (loc) float64 16B 20.0 20.0
-    salinity      (loc) float64 16B 35.0 35.0
-    u_canth       (loc) float64 16B 8.645 12.92
-    delta_over_gamma (loc) float64 16B 1.3 1.3
-    scale_factor  (loc) float64 16B 0.05143 0.05143
+Data variables: (12/15)
+    canth             (loc) float64 16B 47.79 79.87
+    mean_age          (loc) float64 16B 7.224 7.224
+    mode_age          (loc) float64 16B 1.697 1.697
+    dic               (loc) float64 16B 1.994e+03 2.026e+03
+    dic_ref           (loc) float64 16B 1.946e+03 1.946e+03
+    pco2              (loc) float64 16B 325.1 380.7
+               ...
+    preformed_p       (loc) float64 16B 0.5108 0.5108
+    temperature       (loc) float64 16B 20.0 20.0
+    salinity          (loc) float64 16B 35.0 35.0
+    u_canth           (loc) float64 16B 8.645 12.92
+    delta_over_gamma  (loc) float64 16B 1.3 1.3
+    scale_factors     (loc) float64 16B 0.05143 0.05143
 Attributes:
-    Conventions:        CF-1.12
+    Conventions:        CF-1.10
     description:        Results of Tracer-based Rapid Anthropogenic Carbon Es...
-    history:            2025-06-02 15:14:07.415470 3.12.8 | packaged by conda...
+    history:            TRACE version 0.2.0 (beta), 2025-07-16 16:12:25.75531...
+    date_created:       2025-07-16 16:12:25.755341
     references:         doi.org/10.5194/essd-2024-560
-    co2sys_parameters:  {'pressure': 0, 'opt_pH_scale': 1, 'opt_k_carbonic': ...
-    trace_parameters:   {'meas_uncerts': None, 'per_kg_sw_tf': True, 'canth_d...
+    co2sys_parameters:  opt_pH_scale: 1, opt_k_carbonic: 1, opt_k_HSO4: 1, op...
+    trace_parameters:   per_kg_sw_tf: True, canth_diseq: 1.0, eos: seawater, ...
 
 output.canth.data
 
@@ -90,7 +89,7 @@ This result above agrees with TRACEv1, which gives C<sub>anth</sub> = ```[47.786
 Calling ```trace``` without a temperature input will cause it to estimate temperature from salinity and coordinates via a neural network. This is **not** recommended, but will yield results (with a warning) as in TRACEv1:
 
 ```python
-trace(
+output = trace(
     output_coordinates=np.array([[0, 0, 0], [0, 0, 0]]),
     dates=np.array([2000, 2010]),
     predictor_measurements=np.array([[35], [35]]),
@@ -100,40 +99,42 @@ trace(
 
 UserWarning: Temperature is being estimated from salinity and coordinate information.
 
-<xarray.Dataset> Size: 320B
-Dimensions:       (loc: 2)
+output
+
+<xarray.Dataset> Size: 448B
+Dimensions:           (loc: 2)
 Coordinates:
-    year          (loc) float64 16B 2e+03 2.01e+03
-    lon           (loc) int64 16B 0 0
-    lat           (loc) int64 16B 0 0
-    depth         (loc) int64 16B 0 0
+    year              (loc) <U20 160B '2000-01-01T00:00:00Z' '2010-01-01T00:00:00Z'...
+    lon               (loc) int64 16B 0 0
+    lat               (loc) int64 16B 0 0
+    depth             (loc) int64 16B 0 0
 Dimensions without coordinates: loc
-Data variables:
-    canth         (loc) float64 16B 56.06 66.46
-    mean_age      (loc) float64 16B 1.883 1.883
-    mode_age      (loc) float64 16B 0.4424 0.4424
-    dic           (loc) float64 16B 1.925e+03 1.935e+03
-    dic_ref       (loc) float64 16B 1.869e+03 1.869e+03
-    pco2          (loc) float64 16B 322.4 337.9
-    pco2_ref      (loc) float64 16B 252.0 252.0
-    preformed_ta  (loc) float64 16B 2.282e+03 2.282e+03
-    preformed_si  (loc) float64 16B 1.787 1.787
-    preformed_p   (loc) float64 16B 0.08551 0.08551
-    temperature   (loc) float64 16B 26.47 26.47
-    salinity      (loc) float64 16B 35.0 35.0
-    u_canth       (loc) float64 16B 9.699 11.08
-    delta_over_gamma (loc) float64 16B 1.3 1.3
-    scale_factor  (loc) float64 16B 0.01341 0.01341
+Data variables: (12/15)
+    canth             (loc) float64 16B 55.68 65.83
+    mean_age          (loc) float64 16B 1.883 1.883
+    mode_age          (loc) float64 16B 0.4424 0.4424
+    dic               (loc) float64 16B 1.925e+03 1.935e+03
+    dic_ref           (loc) float64 16B 1.869e+03 1.869e+03
+    pco2              (loc) float64 16B 321.8 336.9
+               ...
+    preformed_p       (loc) float64 16B 0.08551 0.08551
+    temperature       (loc) float64 16B 26.47 26.47
+    salinity          (loc) float64 16B 35.0 35.0
+    u_canth           (loc) float64 16B 9.65 10.99
+    delta_over_gamma  (loc) float64 16B 1.3 1.3
+    scale_factors     (loc) float64 16B 0.01341 0.01341
 Attributes:
-    Conventions:        CF-1.12
+    Conventions:        CF-1.10
     description:        Results of Tracer-based Rapid Anthropogenic Carbon Es...
-    history:            2025-06-02 15:55:17.630342 3.12.8 | packaged by conda...
+    history:            TRACE version 0.2.0 (beta), 2025-07-16 16:14:33.49878...
+    date_created:       2025-07-16 16:14:33.498800
     references:         doi.org/10.5194/essd-2024-560
-    co2sys_parameters:  {'pressure': 0, 'opt_pH_scale': 1, 'opt_k_carbonic': ...
-    trace_parameters:   {'meas_uncerts': None, 'per_kg_sw_tf': True, 'canth_d...
+    co2sys_parameters:  opt_pH_scale: 1, opt_k_carbonic: 1, opt_k_HSO4: 1, op...
+    trace_parameters:   per_kg_sw_tf: True, canth_diseq: 1.0, eos: seawater, ...
+
 output.canth.data
 
-array([56.059132, 66.45668126])
+array([55.67914877, 65.8255323])
 
 ```
 

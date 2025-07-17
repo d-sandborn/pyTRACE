@@ -9,7 +9,7 @@ import os
 from scipy import io
 from os.path import join as joinpath
 import pickle
-from numba import jit, njit
+from numba import njit
 from pyTRACE.utils import (
     equation_check,
     units_check,
@@ -312,24 +312,26 @@ def trace_nn(
             ):
                 # Separate neural networks are used for the Arctic/Atlantic and
                 # the rest of the ocean.
-                # est_other[:, Net] = execute_nn(
-                #    P,
-                #    VName,
-                #    "Other",
-                #    Equation,
-                #    Net,
-                #    DATADIR,
-                #    verbose_tf=verbose_tf,
-                # )
-                # est_atl[:, Net] = execute_nn(
-                #    P,
-                #    VName,
-                #    "Atl",
-                #    Equation,
-                #    Net,
-                #    DATADIR,
-                #    verbose_tf=verbose_tf,
-                # )
+                """
+                est_other[:, Net] = execute_nn(
+                    P,
+                    VName,
+                    "Other",
+                    Equation,
+                    Net,
+                    DATADIR,
+                    verbose_tf=verbose_tf,
+                )
+                est_atl[:, Net] = execute_nn(
+                    P,
+                    VName,
+                    "Atl",
+                    Equation,
+                    Net,
+                    DATADIR,
+                    verbose_tf=verbose_tf,
+                )
+                """
                 est_atl[:, Net], est_other[:, Net] = execute_nn_combined(
                     P,
                     VName,

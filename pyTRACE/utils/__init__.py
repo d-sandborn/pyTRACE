@@ -171,7 +171,7 @@ def inverse_gaussian_wrapper(x, delta_over_gamma=1.3):
 
 
 def inpolygon(xq, yq, xv, yv):
-    """New test for points in polygon. Old code below."""
+    """New test for points in polygon."""
     polygon_geom = Polygon(zip(xv, yv))
     polygon = gpd.GeoDataFrame(
         index=[0], crs="epsg:4326", geometry=[polygon_geom]
@@ -206,9 +206,10 @@ CC░▒▓█▓▒░CCC░▒▓█▓▒░░▒▓█▓▒░▒▓█▓
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-                         Python v0.1.0 beta
+                         Python v0.2.0 beta
                     
 Carter, B.; Sandborn D. 2025.
+https://doi.org/10.5194/essd-17-3073-2025
 MATLAB - github.com/BRCScienceProducts/TRACEv1
 Python - github.com/d-sandborn/pyTRACE"""
     )
