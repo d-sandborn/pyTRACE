@@ -233,11 +233,6 @@ def trace_nn(
                     p_from_z(C[:, 2], C[:, 1]),
                 )
 
-        # Checking to see whether O2 is needed. Defining AOU and subbing in for
-        # O2 if yes (see above).
-        # if need_vars[5]:
-        #    m[:, 0, 3] = satO2(m[:, 0, 0], m[:, 0, 1]) * 44.64 - m[:, 0, 3]
-
         # Converting units to molality if they are provided as molarity.
         if not per_kg_sw_tf:
             if eos == "seawater":

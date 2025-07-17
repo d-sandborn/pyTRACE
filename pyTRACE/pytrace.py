@@ -318,6 +318,7 @@ def trace(
                 np.array([1, 2]),
                 DATADIR,
                 verbose_tf=verbose_tf,
+                eos=eos,
             )
     else:
         if verbose_tf:
@@ -329,6 +330,7 @@ def trace(
             np.array([1, 2]),
             DATADIR,
             verbose_tf=verbose_tf,
+            eos=eos,
         )
 
     # Remap the scale factors using another neural network
@@ -343,13 +345,25 @@ def trace(
         except Exception as e:
             print("\ne\nDefaulting to estimating scale factors.")
             sfs = trace_nn(
-                [6], C, m_all, np.array([1, 2]), DATADIR, verbose_tf=verbose_tf
+                [6],
+                C,
+                m_all,
+                np.array([1, 2]),
+                DATADIR,
+                verbose_tf=verbose_tf,
+                eos=eos,
             )
     else:
         if verbose_tf:
             print("\nEstimating scale factors.")
         sfs = trace_nn(
-            [6], C, m_all, np.array([1, 2]), DATADIR, verbose_tf=verbose_tf
+            [6],
+            C,
+            m_all,
+            np.array([1, 2]),
+            DATADIR,
+            verbose_tf=verbose_tf,
+            eos=eos,
         )
 
     # Load CO2 history
@@ -407,9 +421,9 @@ def trace(
         total_silicate=pref_props_sub["Preformed_Si"],
         total_phosphate=pref_props_sub["Preformed_P"],
         opt_pH_scale=opt_pH_scale,
-        opt_k_carbonic=opt_k_carbonic,  # LDK00
-        opt_k_HSO4=opt_k_HSO4,  # D90a
-        opt_total_borate=opt_total_borate,  # LKB10
+        opt_k_carbonic=opt_k_carbonic,
+        opt_k_HSO4=opt_k_HSO4,
+        opt_total_borate=opt_total_borate,
     )
     out = out["dic"]
     out_ref = pyco2.sys(
@@ -421,9 +435,9 @@ def trace(
         total_silicate=pref_props_sub["Preformed_Si"],
         total_phosphate=pref_props_sub["Preformed_P"],
         opt_pH_scale=opt_pH_scale,
-        opt_k_carbonic=opt_k_carbonic,  # LDK00
-        opt_k_HSO4=opt_k_HSO4,  # D90a
-        opt_total_borate=opt_total_borate,  # LKB10
+        opt_k_carbonic=opt_k_carbonic,
+        opt_k_HSO4=opt_k_HSO4,
+        opt_total_borate=opt_total_borate,
     )
     out_ref = out_ref["dic"]
 
