@@ -414,7 +414,10 @@ def trace(
         print("\nInitializing PyCO2SYS calculation.")
     out = pyco2.sys(
         alkalinity=pref_props_sub["Preformed_TA"],
-        pCO2=vpfac * (canth_diseq * (co2_set.T - 280) + 280),
+        pCO2=vpfac
+        * (
+            canth_diseq * (co2_set.T - preindustrial_xco2) + preindustrial_xco2
+        ),
         salinity=m_all[:, 0],
         temperature=m_all[:, 1],
         pressure=0,
@@ -513,7 +516,11 @@ def trace(
                 create_vector_with_values(
                     len(output_coordinates),
                     valid_indices,
-                    vpfac * (canth_diseq * (co2_set.T - 280) + 280),
+                    vpfac
+                    * (
+                        canth_diseq * (co2_set.T - preindustrial_xco2)
+                        + preindustrial_xco2
+                    ),
                 ),
                 {
                     "units": "microatmosphere",

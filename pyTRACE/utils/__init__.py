@@ -51,7 +51,7 @@ def preindustrial_check(preindustrial_xco2):
         preindustrial_xco2, int
     ):
         warnings.warn(
-            "preindustrial_xco2 could not be parsed as str or float. Setting to 280."
+            "preindustrial_xco2 could not be parsed as int or float. Setting to 280."
         )
         preindustrial_xco2 = 280
     return preindustrial_xco2
@@ -206,7 +206,7 @@ CC░▒▓█▓▒░CCC░▒▓█▓▒░░▒▓█▓▒░▒▓█▓
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-                         Python v0.2.0 beta
+                         Python v0.3.0 beta
                     
 Carter, B.; Sandborn D. 2025.
 https://doi.org/10.5194/essd-17-3073-2025
