@@ -27,7 +27,7 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
     say_hello,
     decimal_year_to_iso_timestamp,
-    integration_loop,
+    integrate_column,
 )
 import platform
 
@@ -723,27 +723,67 @@ def trace(
     return output
 
 
-def trace_integrate(
-    ds,
-    bath=None,
+def integrate_a_column(
+    integrand,
+    salinity,
+    temperature,
+    depth,
+    lon: float,
+    bottom: float,
+    top: float = 0,
+    romb_resolution: int = 10,
 ):
     """
-    Integrates anthropogenic carbon estimates at given geographic locations.
+    Integrates anthropogenic carbon estimates at given geographic location.
+    This function may be looped to construct basin or global inventories.
+
+    Parameters
+    ----------
+    integrand : numpy.ndarray
+        Array with length n of quantities to integrate.
+        Must be in per kg seawater units.
+    salinity : numpy.ndarray
+        Array with length n of salinity values associated with integrand.
+        Must be practical scale.
+    temperature : numpy.ndarray
+        Array with length n of temperature values associated with integrand.
+        Must be in-situ temperature.
+    depth : numpy.ndarray
+        Array with length n of depth values associated with integrand.
+        Must be units of meters bsl (i.e. positive values).
+    lon : float
+        Longitude E of column inventory location in degrees. Used for depth
+        to pressure conversion.
+    bottom : float
+        Maximum depth of integration in meters bsl.
+    top : float, optional
+        Minimum depth of integration in meters bsl.
+        The default is 0.
+    romb_resolution : int, optional
+        Controls of points over which pchip interpolation interpolates
+        integrand, using formula points = 2^romb_resolution-1.
+        The default is 10.
 
     Returns
     -------
-    None.
+    column_inventory : float
+        Column integration of integrand, given in input units transformed to
+        per square meter.
 
     """
-    if bath is not None:
-        # TODO: check if bath is the right size
-        ds = ds.assign(bottom=(("lat", "lon"), bath))
-    else:
-        # set bath to be the deepest defined point for each coord
-        # TODO: Fix max to get the right shape
-        ds = ds.assign(bottom=ds.depth.max())
-        pass
-    # TODO: needs reshaping before integration loop! see trace_test_estimation
-    ds = integration_loop(ds, bath)
+    warnings.warn(
+        "This integration is performed without checking for discontinuities, bathymetric boundaries, and other factors which may bias a column integration. This function should be used with caution. "
+    )
 
-    return ds
+    column_inventory = integrate_column(
+        integrand=integrand,
+        salinity=salinity,
+        temperature=temperature,
+        depth=depth,
+        lon=lon,
+        bottom=bottom,
+        top=top,
+        romb_resolution=romb_resolution,
+    )
+
+    return column_inventory

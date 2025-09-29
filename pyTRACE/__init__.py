@@ -1,1 +1,1 @@
-from pyTRACE.pytrace import trace, trace_integrate
+from pyTRACE.pytrace import trace, integrate_a_column
