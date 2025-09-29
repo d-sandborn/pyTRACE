@@ -258,12 +258,12 @@ def decimal_year_to_iso_timestamp(  # for CF Conventions
         return _convert_single_decimal_year(decimal_year_input)
 
 
-def integrate_column(
+def _integrate_column(
     integrand,
     salinity,
     temperature,
     depth,
-    lon: float,
+    lat: float,
     bottom: float,
     top: float = 0,
     romb_resolution: int = 10,
@@ -273,7 +273,7 @@ def integrate_column(
         raise ValueError("The shapes of the input vectors do not match.")
     num_target_points_for_romb = (2**romb_resolution) + 1
     # depthgrid, latgrid = np.meshgrid(ds.depth.data, ds.lat.data)
-    pressure = p_from_z(depth, lon)
+    pressure = p_from_z(-depth, lat * np.ones(len(depth)))
     profile = integrand * rho_t_exact(
         salinity, temperature, pressure
     )  # micromol/kg to micromol/m^3

@@ -144,6 +144,17 @@ array([56.059132, 66.45668126])
 
 The same result was obtained in TRACEv1: C<sub>anth</sub> = ```[56.0591 66.4567]``` for the same inputs.
 
+### Column Integration
+
+A column integration function is available from
+
+```python
+from pyTRACE import column_integration
+```
+
+This function integrates concentrations (e.g. anthropogenic carbon) for a single location between user-provided depths via Piecewise Cubic Hermite Interpolating Polynomial ((PCHIP)[https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.PchipInterpolator.html]) followed by (Romberg)[https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romb.html] numerical integration. While this function only calculates a column inventory at a single location, it is designed to be looped to produce regional or global inventories. 
+
+
 ## Disclaimer
 
 The material embodied in this software is provided to you "as-is" and without warranty of any kind, express, implied or otherwise, including without limitation, any warranty of fitness for a particular purpose.In no event shall the authors be liable to you or anyone else for any direct, special, incidental, indirect or consequential damages of any kind, or any damages whatsoever, including without limitation, loss of profit, loss of use, savings or revenue, or the claims of third parties, whether or not the authors have been advised of the possibility of such loss, however caused and on any theory of liability, arising out of or in connection with the possession, use or performance of this software.

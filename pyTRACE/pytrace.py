@@ -27,7 +27,7 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
     say_hello,
     decimal_year_to_iso_timestamp,
-    integrate_column,
+    _integrate_column,
 )
 import platform
 
@@ -723,12 +723,12 @@ def trace(
     return output
 
 
-def integrate_a_column(
+def integrate_column(
     integrand,
     salinity,
     temperature,
     depth,
-    lon: float,
+    lat: float,
     bottom: float,
     top: float = 0,
     romb_resolution: int = 10,
@@ -751,8 +751,8 @@ def integrate_a_column(
     depth : numpy.ndarray
         Array with length n of depth values associated with integrand.
         Must be units of meters bsl (i.e. positive values).
-    lon : float
-        Longitude E of column inventory location in degrees. Used for depth
+    lat : float
+        Latitude N of column inventory location in degrees. Used for depth
         to pressure conversion.
     bottom : float
         Maximum depth of integration in meters bsl.
@@ -775,12 +775,12 @@ def integrate_a_column(
         "This integration is performed without checking for discontinuities, bathymetric boundaries, and other factors which may bias a column integration. This function should be used with caution. "
     )
 
-    column_inventory = integrate_column(
+    column_inventory = _integrate_column(
         integrand=integrand,
         salinity=salinity,
         temperature=temperature,
         depth=depth,
-        lon=lon,
+        lat=lat,
         bottom=bottom,
         top=top,
         romb_resolution=romb_resolution,
