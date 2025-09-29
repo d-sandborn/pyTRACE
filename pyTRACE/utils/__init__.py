@@ -5,6 +5,9 @@ from scipy.stats import invgauss
 
 # from scipy.spatial import Delaunay
 from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
+from tqdm import tqdm
+from scipy.interpolate import PchipInterpolator
+from scipy.integrate import romb
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
@@ -157,14 +160,14 @@ def prepare_uncertainties(
     return default_u_all, input_u_all
 
 
-def inverse_gaussian_wrapper(x, delta_over_gamma=1.3):
+def inverse_gaussian_wrapper(x, delta_over_gamma=1.3038404810405297):
     """Calculate ventilation distributions (assumed probability
     distribution). lambda should perhaps be 1/1.3 from He et al.
     Note that invgauss calls are different in pyTRACE and TRACE!
     Also note that TRACE approximates mu as 3.4 instead of ~3.38, as
     commented text below indicates."""
-    nu = 3.4  # gamma #default 1
-    lam = 1  # gamma**3 / 2 / delta**2 #default 0.29585798816568043
+    nu = 2 * (delta_over_gamma) ** 2  # default 3.4
+    lam = 1
     y = invgauss.pdf(x, mu=nu / lam, scale=lam, loc=0)
     y = y / y.sum()
     return y
@@ -206,7 +209,7 @@ CC░▒▓█▓▒░CCC░▒▓█▓▒░░▒▓█▓▒░▒▓█▓
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-                         Python v0.3.0 beta
+                         Python v0.2.0 beta
                     
 Carter, B.; Sandborn D. 2025.
 https://doi.org/10.5194/essd-17-3073-2025
@@ -253,3 +256,107 @@ def decimal_year_to_iso_timestamp(  # for CF Conventions
         return vectorized_converter(decimal_year_input)
     else:
         return _convert_single_decimal_year(decimal_year_input)
+
+
+def integration_loop(ds, bath, romb_resolution=10):
+
+    depthgrid, latgrid = np.meshgrid(ds.depth.data, ds.lat.data)
+    pressure = p_from_z(-depthgrid.ravel(), latgrid.ravel()).reshape(
+        depthgrid.shape
+    )
+    ds = ds.assign(
+        pressure=(
+            ("year", "lon", "lat", "depth"),
+            pressure * np.ones(ds.salinity.shape),
+        )
+    )
+
+    ds = ds.assign(
+        carbon_profile=(
+            ("year", "lon", "lat", "depth"),
+            ds.canth.data
+            * rho_t_exact(
+                ds.salinity.data,
+                ds.temperature.data,
+                ds.pressure.data,
+            ),  # micromol/kg to micromol/m^3
+        )
+    ).compute()
+
+    colinv = np.full((len(ds.year), len(ds.lon), len(ds.lat)), np.nan)
+    depths = ds.depth.data
+    dv = np.append(depths[1 : (len(depths))], 6000) - depths
+    num_target_points_for_romb = (2**romb_resolution) + 1
+
+    for t in tqdm(range(len(ds.year.data)), desc="Year", leave=False):
+        integrated_carbon_2d = np.full((len(ds.lon), len(ds.lat)), np.nan)
+        this_year = ds.carbon_profile[t, :, :, :].data
+        for i in tqdm(range(len(ds.lon.data)), desc="Lon", leave=False):
+            for j in range(len(ds.lat.data)):
+                carbon_profile = this_year[i, j, :]
+                current_bottom_depth = bath[j, i]
+                valid_indices = np.logical_and(
+                    (depths <= current_bottom_depth),
+                    (~np.isnan(carbon_profile)),
+                )
+                if np.sum(valid_indices) < 1:  # nada if no water
+                    pass
+                elif (
+                    np.sum(valid_indices) < 2
+                ):  # simple average if only one block
+                    # this_dv truncates depth block at seafloor
+                    this_dv = np.where(
+                        depths < current_bottom_depth, dv, np.nan
+                    )
+                    this_dv[len(this_dv[~np.isnan(this_dv)]) - 1] = np.min(
+                        (current_bottom_depth - depths)[
+                            (current_bottom_depth - depths) > 0
+                        ]
+                    )
+                    integrated_carbon_2d[i, j] = np.nansum(
+                        carbon_profile * this_dv
+                    )
+                elif np.sum(valid_indices) >= 2:  # pchip/romb
+                    valid_original_depths = depths[valid_indices]
+                    valid_carbon_profile = carbon_profile[valid_indices]
+
+                    pchip_interpolator = PchipInterpolator(
+                        valid_original_depths,
+                        valid_carbon_profile,
+                        extrapolate=True,
+                    )
+                    if valid_original_depths[-1] < 5500:
+                        next_deepest_depth_level = depths[
+                            np.where(depths > valid_original_depths[-1])[0][0]
+                        ]  # next deepest in glodap grid
+                        if (
+                            current_bottom_depth > next_deepest_depth_level
+                        ):  # if grid zdoesn't extend to seafloor
+                            current_bottom_depth = (
+                                next_deepest_depth_level  # limit extrapolation
+                            )
+                    if valid_original_depths[-1] > 6000:
+                        current_bottom_depth = 6000  # limit extrapolation
+                    dynamic_target_depth_points = np.linspace(
+                        0, current_bottom_depth, num_target_points_for_romb
+                    )
+                    h = (
+                        dynamic_target_depth_points[1]
+                        - dynamic_target_depth_points[0]
+                    )
+                    # Perform interpolation
+                    interpolated_values = pchip_interpolator(
+                        dynamic_target_depth_points
+                    )
+                    try:
+                        integrated_carbon_2d[i, j] = romb(
+                            interpolated_values, dx=h
+                        )
+                    except ValueError as e:
+                        print(
+                            f"Error during Romberg integration at ({i}, {j}): {e}. Setting integrated value to NaN."
+                        )
+
+        colinv[t, :, :] = integrated_carbon_2d
+
+    ds = ds.assign(col_inventory=(("year", "lon", "lat"), colinv))

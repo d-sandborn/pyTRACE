@@ -27,6 +27,7 @@ from pyTRACE.utils import (
     inverse_gaussian_wrapper,
     say_hello,
     decimal_year_to_iso_timestamp,
+    integration_loop,
 )
 import platform
 
@@ -48,7 +49,7 @@ def trace(
     error_codes: list = [-999, -9, -1e20],
     canth_diseq: float = 1.0,
     eos: str = "seawater",
-    delta_over_gamma=1.3,  # broken
+    delta_over_gamma: float = 1.3038404810405297,
     opt_pH_scale: int = 1,
     opt_k_carbonic: int = 10,  # LDK00
     opt_k_HSO4: int = 1,  # D90a
@@ -166,7 +167,8 @@ def trace(
     delta: float, optional
         Second moment of inverse gaussian distribution used to convolute
         the surface and interior histories of anthropogenic carbon.
-        The default is 1.3.
+        The default is 1.3038404810405297 to match TRACEv1 s.t.
+        pf=makedist(‘InverseGaussian’,‘mu’,1,‘lambda’,3.4) is identical.
     opt_pH_scale: int, optional
         PyCO2SYS option for pH scale.
         The default is 1.
@@ -719,3 +721,29 @@ def trace(
             print("File " + output_filename + " could not be saved")
             print(e)
     return output
+
+
+def trace_integrate(
+    ds,
+    bath=None,
+):
+    """
+    Integrates anthropogenic carbon estimates at given geographic locations.
+
+    Returns
+    -------
+    None.
+
+    """
+    if bath is not None:
+        # TODO: check if bath is the right size
+        ds = ds.assign(bottom=(("lat", "lon"), bath))
+    else:
+        # set bath to be the deepest defined point for each coord
+        # TODO: Fix max to get the right shape
+        ds = ds.assign(bottom=ds.depth.max())
+        pass
+    # TODO: needs reshaping before integration loop! see trace_test_estimation
+    ds = integration_loop(ds, bath)
+
+    return ds

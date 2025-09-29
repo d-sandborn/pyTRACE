@@ -1,1 +1,1 @@
-from pyTRACE.pytrace import trace #this is awful
+from pyTRACE.pytrace import trace, trace_integrate
