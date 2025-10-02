@@ -115,8 +115,8 @@ def trace(
     predictor_types : ArrayLike
         1 by y array indicating which
         parameter is in each column of 'predictor_measurements'.
-        Note that salinity is required for all equations. Input
-        parameter key:
+        Note that salinity is required for all equations. This applies to all
+        n estimates. Input parameter key:
             1. Salinity
             2. Temperature
     atm_co2_trajectory : int
@@ -149,8 +149,9 @@ def trace(
         The default is [-999, -9, -1e20].
     canth_diseq : int, optional
         Air-sea carbon dioxide equilibrium assumed for calculation of
-        pCO2 as a function of atmospheric CO2. A value of 1 indicates
-        no change to the default equilibrium function.
+        pCO2 as a function of atmospheric CO2. This should only be used if
+        user-provided atmospheric trajectories not otherwise modified for
+        anthropogenic carbon disequilibrium are being supplied.
         The default is 1.
     eos: str, optional
         Choice of seawater equation of state to use for temperature, density,
@@ -219,15 +220,18 @@ def trace(
     """
     equations = [1]  # leftover from ESPER
     equations = equation_check(equations)
-    per_kg_sw_tf = units_check(per_kg_sw_tf)
+    per_kg_sw_tf = units_check(per_kg_sw_tf)  # dummy placeholder
+
+    # set at default 280 if not int or float
     preindustrial_xco2 = preindustrial_check(preindustrial_xco2)
+
     (
         meas_uncerts,
         input_u,
         use_default_uncertainties,
         predictor_measurements,
         predictor_types,
-    ) = uncerts_check(
+    ) = uncerts_check(  # prep user-provided uncerts, also check array format
         meas_uncerts,
         predictor_measurements,
         predictor_types,
@@ -244,25 +248,28 @@ def trace(
         np.isnan(dates).reshape(-1, 1),
     )
     valid_indices = np.argwhere(valid_indices > 0)[:, 0]
+
+    # all depths made positive, also check array format
     output_coordinates = depth_check(output_coordinates, valid_indices)
 
     # Doing a size check for the coordinates.
     if np.shape(output_coordinates)[1] != 3:
         raise ValueError(
-            "output_coordinates has either too many or two few columns.  This version only allows 3 columns with the first being longitude (deg E), the second being latitude (deg N), and the third being depth (m)."
+            "output_coordinates has too many or two few columns.  This version only allows 3 columns with the first being longitude (deg E), the second being latitude (deg N), and the third being depth (m)."
         )
 
     # Figuring out how many estimates are required
     n = len(valid_indices)
 
-    # Checking for common missing data indicator flags and warning if any are found.
-    # Consider adding your commonly-used flags.
+    # Checking for common missing data indicator flags and warning if any are
+    # found.
     for i in error_codes:
         if i in predictor_measurements:
             warnings.warn(
                 "A common non-NaN missing data indicator (e.g. -999, -9, -1e20) was detected in the input measurements provided.  Missing data should be replaced with np.nan, otherwise, PyTRACE will interpret your inputs at face value and give terrible estimates."
             )
 
+    # Flag weird latitudes. Convert longitudes to 0-360.
     output_coordinates, C = coordinate_check(output_coordinates, valid_indices)
     default_u_all, input_u_all = prepare_uncertainties(
         predictor_measurements,
@@ -310,8 +317,8 @@ def trace(
         print(f"{e}\nCould not convert at dates to a numpy array.")
     dates = dates[valid_indices]
 
-    # Estimate preformed properties using a neural network
-    # or reuse old ones
+    # Estimate preformed properties using a neural network or reuse old ones
+    # which saves a considerable amount of time in loops
     if (
         (preformed_p is not None)
         and (preformed_ta is not None)
@@ -349,8 +356,8 @@ def trace(
             eos=eos,
         )
 
-    # Remap the scale factors using another neural network
-    # or reuse old ones
+    # Remap the scale factors using another neural network or reuse old ones
+    # which saves a considerable amount of time in loops
     if scale_factors is not None:
         try:
             sfs = {  # eliminates indices without all req'd info
@@ -388,7 +395,7 @@ def trace(
     # slow response of the surface ocean to a rapidly changing atmospheric
     # value. "Adjusted" can be deleted in the following line to use the
     # original atmospheric values.  If this approach is used, then users should
-    # consider altering CanthDiseq below to modulate the degree of equilibrium.
+    # consider altering canth_diseq below to modulate the degree of equilibrium.
     if verbose_tf:
         print(
             "\nLoading CO2 History:"

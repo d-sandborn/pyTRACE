@@ -63,7 +63,7 @@ def preindustrial_check(preindustrial_xco2):
 def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
     """Checks the meas_uncerts argument.  This also deals with the
     possibility that the user has provided a single set of uncertainties
-    for all estimates."""
+    for all estimates. Also coerces arrays to np.array."""
     if meas_uncerts is not None:
         use_default_uncertainties = False
         try:
@@ -123,7 +123,7 @@ def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
 
 def depth_check(output_coordinates, valid_indices):
     """This step checks for negative depths.  If found, it changes them to
-    positive depths and issues a warning."""
+    positive depths and issues a warning. Also coerces arrays to np.array."""
     try:
         output_coordinates = np.asarray(output_coordinates)
     except Exception as e:
@@ -158,8 +158,7 @@ def prepare_uncertainties(
     use_default_uncertainties,
     input_u,
 ):
-    """Preparing full predictor_measurement uncertainty grid.
-    Maybe vestigial??"""
+    """Preparing full predictor_measurement uncertainty grid."""
     default_uncertainties = np.diag([1, 1, 0.02, 0.02, 0.02, 0.01])
     default_u_all = np.zeros([len(predictor_measurements), 6])
     default_u_all[:, predictor_types - 1] = (

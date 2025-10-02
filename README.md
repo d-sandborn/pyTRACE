@@ -1,12 +1,11 @@
 # Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)
-Python version 0.2.0 (beta)
 
 [![Python application](https://github.com/d-sandborn/pyTRACE/actions/workflows/python-app.yml/badge.svg)](https://github.com/d-sandborn/pyTRACE/actions/workflows/python-app.yml) 
 [![DOI](https://zenodo.org/badge/931694885.svg)](https://doi.org/10.5281/zenodo.15597122)
 
-After [TRACEv1](https://github.com/BRCScienceProducts/TRACEv1) and being developed in parallel with [ESPER](https://github.com/BRCScienceProducts/ESPER) and [PyESPER](https://github.com/LarissaMDias/PyESPER). Please reference the TRACEv1 [publication](https://doi.org/10.5194/essd-17-3073-2025) for further details.
+After [TRACEv1](https://github.com/BRCScienceProducts/TRACEv1) and being developed in parallel with [ESPER](https://github.com/BRCScienceProducts/ESPER) and [PyESPER](https://github.com/LarissaMDias/PyESPER). Please reference the TRACEv1 [publication](https://doi.org/10.5194/essd-17-3073-2025) for further details. This work is the subject of a manuscript in preparation or review, and should be considered preliminary. This repository will be updated with any preprints and final published paper, and a new release will be produced pending publication. 
 
-This code generates estimates of ocean anthropogenic carbon content from user-supplied inputs of coordinates (lon, lat, depth), salinity, temperature, and year. Information is also needed about the historical and/or future atmospheric CO<sub>2</sub> trajectory.  This information can be provided or default values can be assumed.  This tool is a multi-platform implementation of the inverse gaussian transit time distribution method aimed at increasing the accessibility of ocean anthropogenic carbon content estimation.
+This routine generates estimates of ocean anthropogenic carbon content from user-supplied inputs of coordinates (lon, lat, depth), salinity, temperature, and year. Information is also needed about the historical and/or future atmospheric CO<sub>2</sub> trajectory.  This information can be provided or default values can be assumed.  This tool is a multi-platform implementation of the inverse gaussian transit time distribution method aimed at increasing the accessibility of ocean anthropogenic carbon content estimation.
 
 ## Setup
 
@@ -29,6 +28,8 @@ which will make available the top-level function for anthropogenic carbon estima
 ```python
 ?trace
 ```
+
+Further documentation may be produced at a later date if interest warrants it. See also the comments and docstrings in the source code. Interested users are welcome to reach out to the development team with questions. 
 
 To estimate anthropogenic carbon (C<sub>anth</sub>) at the surface ocean at the equator/prime meridian in the years 2000 and 2200 assuming IPCC pathway SSP5_3.4_over:
 
@@ -86,7 +87,7 @@ array([47.78685407, 79.87492991])
 
 ```
 
-This result above agrees with TRACEv1, which gives C<sub>anth</sub> = ```[47.7869 79.8749]``` for the same inputs.
+This result above agrees exactly with TRACEv1, which gives C<sub>anth</sub> = ```[47.7869 79.8749]``` for the same inputs.
 
 Calling ```trace``` without a temperature input will cause it to estimate temperature from salinity and coordinates via a neural network. This is **not** recommended, but will yield results (with a warning) as in TRACEv1:
 
@@ -146,13 +147,13 @@ The same result was obtained in TRACEv1: C<sub>anth</sub> = ```[56.0591 66.4567]
 
 ### Column Integration
 
-A column integration function is available from
+A column integration function is available:
 
 ```python
 from pyTRACE import column_integration
 ```
 
-This function integrates concentrations (e.g. anthropogenic carbon) for a single location between user-provided depths via Piecewise Cubic Hermite Interpolating Polynomial ((PCHIP)[https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.PchipInterpolator.html]) followed by (Romberg)[https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romb.html] numerical integration. While this function only calculates a column inventory at a single location, it is designed to be looped to produce regional or global inventories. 
+This function integrates concentrations (e.g. anthropogenic carbon) for a single location between user-provided depths via Piecewise Cubic Hermite Interpolating Polynomial ([PCHIP](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.PchipInterpolator.html) followed by [Romberg](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romb.html) numerical integration. While this function only calculates a column inventory at a single location, it is designed to be looped to produce regional or global inventories. 
 
 
 ## Disclaimer
