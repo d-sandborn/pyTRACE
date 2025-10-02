@@ -1,5 +1,5 @@
 """
-Combined function for NN estimation in pyTRACE
+Functions for neural network estimation in pyTRACE.
 """
 
 import numpy as np
@@ -144,9 +144,13 @@ def trace_nn(
 
     equations = equation_check(equations)
     per_kg_sw_tf = units_check(per_kg_sw_tf)
-    meas_uncerts, input_u, use_default_uncertainties = uncerts_check(
-        meas_uncerts, predictor_measurements, predictor_types
-    )
+    (
+        meas_uncerts,
+        input_u,
+        use_default_uncertainties,
+        predictor_measurements,
+        predictor_types,
+    ) = uncerts_check(meas_uncerts, predictor_measurements, predictor_types)
     valid_indices = ~np.isnan(output_coordinates).any(axis=1)
     valid_indices = np.argwhere(valid_indices > 0)[:, 0]
 
@@ -492,7 +496,7 @@ def execute_nn(X, VName, Location, Equation, Net, DATADIR, verbose_tf=True):
     y1_step1xoffset = np.array(y1_step1["xoffset"])
 
     TS = len(X)
-    if len(X) != 0:
+    if len(X) != 0:  # likely redundant, throwback to ESPER
         Q = 1  # X[0][None, :].shape[1] if isinstance(X[0], np.ndarray) else len(X[0])
     else:
         Q = 1
@@ -588,7 +592,7 @@ def execute_nn_combined(X, VName, Equation, Net, DATADIR, verbose_tf=True):
     y1_step1xoffsetOther = np.array(y1_step1Other["xoffset"])
 
     TS = len(X)
-    if len(X) != 0:
+    if len(X) != 0:  # likely redundant, throwback to ESPER
         Q = 1  # X[0][None, :].shape[1] if isinstance(X[0], np.ndarray) else len(X[0])
     else:
         Q = 1

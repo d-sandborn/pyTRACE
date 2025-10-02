@@ -54,7 +54,7 @@ def preindustrial_check(preindustrial_xco2):
         preindustrial_xco2, int
     ):
         warnings.warn(
-            "preindustrial_xco2 could not be parsed as int or float. Setting to 280."
+            "Preindustrial_xco2 could not be parsed as int or float. Setting to 280."
         )
         preindustrial_xco2 = 280
     return preindustrial_xco2
@@ -66,7 +66,14 @@ def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
     for all estimates."""
     if meas_uncerts is not None:
         use_default_uncertainties = False
-
+        try:
+            meas_uncerts = np.asarray(meas_uncerts)
+            predictor_measurements = np.asarray(predictor_measurements)
+            predictor_types = np.asarray(predictor_types)
+        except Exception as e:
+            print(
+                f"{e}\nCould not convert at least one of meas_uncerts, predictor_measurements, and/or predictor_types to a numpy array."
+            )
         if (
             (not np.max(np.shape(meas_uncerts)) == len(predictor_measurements))
             and not np.min(
@@ -97,13 +104,30 @@ def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
     else:
         use_default_uncertainties = True
         input_u = None
+        try:
+            predictor_measurements = np.asarray(predictor_measurements)
+            predictor_types = np.asarray(predictor_types)
+        except Exception as e:
+            print(
+                f"{e}\nCould not convert at least one of predictor_measurements and/or predictor_types to a numpy array."
+            )
 
-    return meas_uncerts, input_u, use_default_uncertainties
+    return (
+        meas_uncerts,
+        input_u,
+        use_default_uncertainties,
+        predictor_measurements,
+        predictor_types,
+    )
 
 
 def depth_check(output_coordinates, valid_indices):
     """This step checks for negative depths.  If found, it changes them to
     positive depths and issues a warning."""
+    try:
+        output_coordinates = np.asarray(output_coordinates)
+    except Exception as e:
+        print(f"{e}\nCould not convert output_coordinates to a numpy array.")
     if np.any(output_coordinates[valid_indices, 2] < 0):
         warnings.warn(
             "Negative depths were detected and changed to positive values."
