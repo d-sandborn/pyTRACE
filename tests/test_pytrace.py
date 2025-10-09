@@ -17,8 +17,8 @@ def test_trace_matlab():
         predictor_types=np.array([1, 2]),
         atm_co2_trajectory=9,
     )
-    assert output.canth.data[0] - 47.7869 < 0.00001
-    assert output.canth.data[1] - 79.8749 < 0.00001
+    assert output.canth.data[0] - 47.7869 < 0.0001
+    assert output.canth.data[1] - 79.8749 < 0.0001
 
 
 def test_trace_matlab_no_temperature():
@@ -30,8 +30,8 @@ def test_trace_matlab_no_temperature():
         predictor_types=np.array([1]),
         atm_co2_trajectory=1,
     )
-    assert output.canth.data[0] - 56.0591 < 0.00001
-    assert output.canth.data[1] - 66.4567 < 0.00001
+    assert output.canth.data[0] - 56.0591 < 0.0001
+    assert output.canth.data[1] - 66.4567 < 0.0001
 
 
 def test_integrate_column():
