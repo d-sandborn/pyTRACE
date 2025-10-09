@@ -18,11 +18,24 @@ def test_trace_matlab():
         atm_co2_trajectory=9,
     )
     assert output.canth.data[0] - 47.7869 < 0.00001
+    assert output.canth.data[1] - 79.8749 < 0.00001
+
+
+def test_trace_matlab_no_temperature():
+    """Is pyTRACE giving identical results to no-T TRACEv1 check values?"""
+    output = trace(
+        output_coordinates=np.array([[0, 0, 0], [0, 0, 0]]),
+        dates=np.array([2000, 2010]),
+        predictor_measurements=np.array([[35], [35]]),
+        predictor_types=np.array([1]),
+        atm_co2_trajectory=1,
+    )
+    assert output.canth.data[0] - 56.0591 < 0.00001
+    assert output.canth.data[1] - 66.4567 < 0.00001
 
 
 def test_integrate_column():
-    """Is the integration routine interpolating correctly, and not
-    extrapolating beyond define bottom bound?"""
+    """Is the integration routine interpolating correctly?"""
     integral = integrate_column(
         integrand=np.array([1, 2, 3]),
         salinity=np.array([35, 35, 35]),

@@ -1,10 +1,10 @@
+"""Utility functions."""
+
 import numpy as np
 import warnings
 import datetime
 from scipy.stats import invgauss
-
-# from scipy.spatial import Delaunay
-from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
+from gsw import rho_t_exact, p_from_z
 from tqdm import tqdm
 from scipy.interpolate import PchipInterpolator
 from scipy.integrate import romb
@@ -12,15 +12,13 @@ from scipy.integrate import romb
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     from seawater import ptmp, dens, pres
-# from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import geopandas as gpd
-
-# import pandas as pd
 
 
 def equation_check(equation):
     """Check equation inputs and assigns them to be [1] regardless.
+
     Largely a carry-over from ESPER, which accepted more options."""
     match equation:
         case []:
@@ -39,6 +37,7 @@ def equation_check(equation):
 
 def units_check(per_kg_sw_tf):
     """Check for per_kg_sw_tf input and setting default if not given.
+
     This input is not needed for TRACE, currently."""
     if not per_kg_sw_tf:
         warnings.warn(
@@ -49,7 +48,7 @@ def units_check(per_kg_sw_tf):
 
 
 def preindustrial_check(preindustrial_xco2):
-    """Check for preindustrial_xco2 input and setting default if not given"""
+    """Check for preindustrial_xco2 input and setting default if not given."""
     if not isinstance(preindustrial_xco2, float) and not isinstance(
         preindustrial_xco2, int
     ):
@@ -61,9 +60,13 @@ def preindustrial_check(preindustrial_xco2):
 
 
 def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
-    """Checks the meas_uncerts argument.  This also deals with the
+    """
+    Checks the meas_uncerts argument.
+
+    This also deals with the
     possibility that the user has provided a single set of uncertainties
-    for all estimates. Also coerces arrays to np.array."""
+    for all estimates. Also coerces arrays to np.array.
+    """
     if meas_uncerts is not None:
         use_default_uncertainties = False
         try:
@@ -96,7 +99,6 @@ def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
             input_u = (
                 np.ones(len(predictor_measurements)) * meas_uncerts
             )  # Copying uncertainty estimates for all estimates if only singular values are provided
-            # not sure that works as intended
         if not np.shape(predictor_types)[0] == len(predictor_measurements):
             raise ValueError(
                 "The predictor_types input does not have the same number of columns as the predictor_measurements input.  This means it is unclear which measurement is in which column."
@@ -122,8 +124,12 @@ def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
 
 
 def depth_check(output_coordinates, valid_indices):
-    """This step checks for negative depths.  If found, it changes them to
-    positive depths and issues a warning. Also coerces arrays to np.array."""
+    """
+    This step checks for negative depths.
+
+    If found, it changes them to
+    positive depths and issues a warning. Also coerces arrays to np.array.
+    """
     try:
         output_coordinates = np.asarray(output_coordinates)
     except Exception as e:
@@ -139,8 +145,7 @@ def depth_check(output_coordinates, valid_indices):
 
 
 def coordinate_check(output_coordinates, valid_indices):
-    """Book-keeping with coordinate inputs and adjusting negative
-    longitudes."""
+    """Book-keeping coordinate inputs and adjusting negative longitudes."""
     if np.any(np.abs(output_coordinates[:, 1]) > 90):
         raise ValueError(
             "A latitude >90 degrees (N or S) has been detected.  Verify latitude is in the 2nd colum of the coordinate input."
@@ -158,7 +163,7 @@ def prepare_uncertainties(
     use_default_uncertainties,
     input_u,
 ):
-    """Preparing full predictor_measurement uncertainty grid."""
+    """Prepare full predictor_measurement uncertainty grid."""
     default_uncertainties = np.diag([1, 1, 0.02, 0.02, 0.02, 0.01])
     default_u_all = np.zeros([len(predictor_measurements), 6])
     default_u_all[:, predictor_types - 1] = (
@@ -172,9 +177,8 @@ def prepare_uncertainties(
         0.003  # Then setting additive default uncertainties for S
     )
     default_u_all = default_u_all[valid_indices, :]
-    input_u_all = default_u_all  # [valid_indices, :]
+    input_u_all = default_u_all
     if not use_default_uncertainties:  # if user supplied uncertainties
-        # input_u_all = np.zeros_like(predictor_measurements)
         input_u_all[:, predictor_types - 1] = input_u
         input_u_all = input_u_all[valid_indices, :]
         # Overriding user provided uncertainties that are smaller than the
@@ -184,11 +188,15 @@ def prepare_uncertainties(
 
 
 def inverse_gaussian_wrapper(x, delta_over_gamma=1.3038404810405297):
-    """Calculate ventilation distributions (assumed probability
-    distribution). lambda should perhaps be 1/1.3 from He et al.
+    """
+    Calculate ventilation distributions (assumed probability
+    distribution).
+
+    lambda should perhaps be 1/1.3 from He et al.
     Note that invgauss calls are different in pyTRACE and TRACE!
     Also note that TRACE approximates mu as 3.4 instead of ~3.38,
-    leading to the default delta_over_gamma = sqrt(3.4/2)."""
+    leading to the default delta_over_gamma = sqrt(3.4/2).
+    """
     nu = 2 * (delta_over_gamma) ** 2  # default 3.4
     lam = 1
     y = invgauss.pdf(x, mu=nu / lam, scale=lam, loc=0)
@@ -197,12 +205,11 @@ def inverse_gaussian_wrapper(x, delta_over_gamma=1.3038404810405297):
 
 
 def inpolygon(xq, yq, xv, yv):
-    """New test for points in polygon."""
+    """Test for points in polygon."""
     polygon_geom = Polygon(zip(xv, yv))
     polygon = gpd.GeoDataFrame(
         index=[0], crs="epsg:4326", geometry=[polygon_geom]
     )
-    # df = pd.DataFrame({"lon": xq, "lat": yq})
     geo = gpd.points_from_xy(xq, yq)
     points = gpd.GeoDataFrame(geometry=geo, crs=polygon.crs)
     pointInPolys = points.intersects(polygon.union_all())

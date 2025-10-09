@@ -1,6 +1,4 @@
-"""
-Functions for neural network estimation in pyTRACE.
-"""
+"""Functions for neural network estimation in pyTRACE."""
 
 import numpy as np
 import warnings
@@ -13,15 +11,12 @@ from numba import njit
 from pyTRACE.utils import (
     equation_check,
     units_check,
-    preindustrial_check,
     uncerts_check,
-    depth_check,
     coordinate_check,
     prepare_uncertainties,
-    inverse_gaussian_wrapper,
     inpolygon,
 )
-from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP, CT_from_t
+from gsw import pt0_from_t, rho_t_exact, p_from_z, SA_from_SP
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
@@ -42,7 +37,7 @@ def trace_nn(
     eos="seawater",
 ):
     """
-    Implements ESPER NN estimation of properties for pyTRACE.
+    Implement ESPER NN estimation of properties for pyTRACE.
 
     Input/Output dimensions:
     .........................................................................
@@ -51,7 +46,6 @@ def trace_nn(
     e: Integer number of equations used at each location
     y: Integer number of parameter measurement types provided by the user.
     n*e: Total number of estimates returned as an n by e array
-
 
     Parameters
     ----------
@@ -94,7 +88,6 @@ def trace_nn(
          see 'predictor_measurements' for units).
         Options:
             1.  S, T
-
         The default is [1].
     meas_uncerts : list, optional
         List of measurement uncertainties presented in order indicated
@@ -141,7 +134,6 @@ def trace_nn(
         or depth.
 
     """
-
     equations = equation_check(equations)
     per_kg_sw_tf = units_check(per_kg_sw_tf)
     (
@@ -155,7 +147,6 @@ def trace_nn(
     valid_indices = np.argwhere(valid_indices > 0)[:, 0]
 
     n = len(valid_indices)
-    e = np.size(equations)
     p = len(desired_variables)
 
     for i in error_codes:
@@ -429,26 +420,20 @@ def trace_nn(
 
 @njit
 def mapminmax_apply(x, xoffset, gain, ymin):
-    """Map Minimum and Maximum Input Processing Function"""
-    # y = np.subtract(x, np.array(settings["xoffset"]).T)
-    # y = np.multiply(y, np.array(settings["gain"]).T)
-    # y = np.add(y, np.array(settings["ymin"]).T)
+    """Map Minimum and Maximum Input Processing Function."""
     y = ((x - xoffset.T) * gain.T) + ymin.T
     return y
 
 
 @njit
 def tansig_apply(n):
-    """Sigmoid Symmetric Transfer Function"""
+    """Sigmoid Symmetric Transfer Function."""
     return 2 / (1 + np.exp(-2 * n)) - 1
 
 
 @njit
 def mapminmax_reverse(y, xoffset, gain, ymin):
-    """Map Minimum and Maximum Output Reverse-Processing Function"""
-    # x = np.subtract(y, np.array(settings["ymin"]).T)
-    # x = np.divide(x, np.array(settings["gain"]).T)
-    # x = np.add(x, np.array(settings["xoffset"]).T)
+    """Map Minimum and Maximum Output Reverse-Processing Function."""
     x = ((y - ymin.T) / gain.T) + xoffset.T
     return x
 
@@ -496,10 +481,6 @@ def execute_nn(X, VName, Location, Equation, Net, DATADIR, verbose_tf=True):
     y1_step1xoffset = np.array(y1_step1["xoffset"])
 
     TS = len(X)
-    if len(X) != 0:  # likely redundant, throwback to ESPER
-        Q = 1  # X[0][None, :].shape[1] if isinstance(X[0], np.ndarray) else len(X[0])
-    else:
-        Q = 1
     Y = np.full(TS, np.nan)  # [None] * TS
     for ts in tqdm(
         range(TS), disable=(not verbose_tf), leave=False, desc="Locations"
@@ -528,9 +509,11 @@ def execute_nn(X, VName, Location, Equation, Net, DATADIR, verbose_tf=True):
 
 
 def execute_nn_combined(X, VName, Equation, Net, DATADIR, verbose_tf=True):
-    """Execute neural network by calling pickle file with weights
+    """
+    Execute neural network by calling pickle file with weights
     determined using MATLAB machine learning routines, followed by
-    linear algebra replicating neural network architecture exactly."""
+    linear algebra replicating neural network architecture exactly.
+    """
     with open(joinpath(DATADIR, "nn_params.pkl"), "rb") as f:
         dill = pickle.load(f)
     if VName == "Temperature":
@@ -592,12 +575,8 @@ def execute_nn_combined(X, VName, Equation, Net, DATADIR, verbose_tf=True):
     y1_step1xoffsetOther = np.array(y1_step1Other["xoffset"])
 
     TS = len(X)
-    if len(X) != 0:  # likely redundant, throwback to ESPER
-        Q = 1  # X[0][None, :].shape[1] if isinstance(X[0], np.ndarray) else len(X[0])
-    else:
-        Q = 1
-    YAtl = np.full(TS, np.nan)  # [None] * TS
-    YOther = np.full(TS, np.nan)  # [None] * TS
+    YAtl = np.full(TS, np.nan)
+    YOther = np.full(TS, np.nan)
     for ts in tqdm(
         range(TS), disable=(not verbose_tf), leave=False, desc="Locations"
     ):

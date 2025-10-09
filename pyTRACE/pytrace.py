@@ -1,5 +1,6 @@
 """
 Top level module of pyTRACE.
+
 trace()
     Generates etimates of ocean anthropogenic carbon content from
     user-supplied inputs of coordinates (lat, lon, depth), salinity,
@@ -26,7 +27,6 @@ from pyTRACE.utils import (
     coordinate_check,
     prepare_uncertainties,
     inverse_gaussian_wrapper,
-    say_hello,
     decimal_year_to_iso_timestamp,
     _integrate_column,
 )
@@ -756,6 +756,7 @@ def integrate_column(
 ):
     """
     Integrates anthropogenic carbon estimates at given geographic location.
+
     This function may be looped to construct basin or global inventories.
 
     Parameters
