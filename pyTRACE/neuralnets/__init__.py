@@ -322,7 +322,7 @@ def trace_nn(
                     verbose_tf=verbose_tf,
                 )
                 """
-                est_atl[:, Net], est_other[:, Net] = execute_nn_combined(
+                est_atl[:, Net], est_other[:, Net] = execute_nn_combined_vectorized(
                     P,
                     VName,
                     Equation,
@@ -626,5 +626,124 @@ def execute_nn_combined(X, VName, Equation, Net, DATADIR, verbose_tf=True):
             YOther[ts] = mapminmax_reverse(
                 a3, y1_step1xoffsetOther, y1_step1ygainOther, y1_step1yminOther
             )[0][0]
+
+    return YAtl, YOther
+
+def execute_nn_combined_vectorized(X, VName, Equation, Net, DATADIR, verbose_tf=True):
+    """
+    Execute neural network by calling pickle file with weights
+    determined using MATLAB machine learning routines, followed by
+    linear algebra replicating neural network architecture exactly.
+    """
+    with open(joinpath(DATADIR, "nn_params.pkl"), "rb") as f:
+        dill = pickle.load(f)
+    if VName == "Temperature":
+        VName = "EstT_Temperature"
+        X = X[:, 0:5]
+    X = np.array(X)
+    dillAtl = dill[
+        "TRACE_"
+        + VName
+        + "_"
+        + str(Equation)
+        + "_"
+        + "Atl"
+        + "_"
+        + str(Net + 1)
+    ]
+    dillOther = dill[
+        "TRACE_"
+        + VName
+        + "_"
+        + str(Equation)
+        + "_"
+        + "Other"
+        + "_"
+        + str(Net + 1)
+    ]
+    x1_step1Atl = dillAtl[0]
+    b1Atl = np.array(dillAtl[1], dtype=np.float64)
+    IW1_1Atl = np.array(dillAtl[2], dtype=np.float64)
+    b2Atl = dillAtl[3]
+    LW2_1Atl = np.array(dillAtl[4], dtype=np.float64)
+    b3Atl = np.array([[dillAtl[5]]], dtype=np.float64)
+    LW3_2Atl = np.array(dillAtl[6], dtype=np.float64)
+    y1_step1Atl = dillAtl[7]
+
+    x1_step1xoffsetAtl = np.array(x1_step1Atl["xoffset"])
+    x1_step1gainAtl = np.array(x1_step1Atl["gain"])
+    x1_step1yminAtl = np.array(x1_step1Atl["ymin"])
+
+    y1_step1yminAtl = np.array(y1_step1Atl["ymin"])
+    y1_step1ygainAtl = np.array(y1_step1Atl["gain"])
+    y1_step1xoffsetAtl = np.array(y1_step1Atl["xoffset"])
+
+    x1_step1Other = dillOther[0]
+    b1Other = np.array(dillOther[1], dtype=np.float64)
+    IW1_1Other = np.array(dillOther[2], dtype=np.float64)
+    b2Other = dillOther[3]
+    LW2_1Other = np.array(dillOther[4], dtype=np.float64)
+    b3Other = np.array([[dillOther[5]]], dtype=np.float64)
+    LW3_2Other = np.array(dillOther[6], dtype=np.float64)
+    y1_step1Other = dillOther[7]
+
+    x1_step1xoffsetOther = np.array(x1_step1Other["xoffset"])
+    x1_step1gainOther = np.array(x1_step1Other["gain"])
+    x1_step1yminOther = np.array(x1_step1Other["ymin"])
+
+    y1_step1yminOther = np.array(y1_step1Other["ymin"])
+    y1_step1ygainOther = np.array(y1_step1Other["gain"])
+    y1_step1xoffsetOther = np.array(y1_step1Other["xoffset"])
+
+    TS = len(X)
+    YAtl = np.full(TS, np.nan)
+    YOther = np.full(TS, np.nan)
+    
+    if Net == 0:
+        # Atl
+        Xp1 = mapminmax_apply(
+            X, x1_step1xoffsetAtl, x1_step1gainAtl, x1_step1yminAtl
+        )
+        a1 = tansig_apply(tile_n_dot(b1Atl, IW1_1Atl, Xp1.T))
+        a2 = tile_n_dot(np.array([[b2Atl]]), LW2_1Atl, a1)
+        YAtl = mapminmax_reverse(
+            a2, y1_step1xoffsetAtl, y1_step1ygainAtl, y1_step1yminAtl
+        )[0][0]
+        # Other
+        Xp1 = mapminmax_apply(
+            X,
+            x1_step1xoffsetOther,
+            x1_step1gainOther,
+            x1_step1yminOther,
+        )
+        a1 = tansig_apply(tile_n_dot(b1Other, IW1_1Other, Xp1.T))
+        a2 = tile_n_dot(np.array([[b2Other]]), LW2_1Other, a1)
+        YOther = mapminmax_reverse(
+            a2, y1_step1xoffsetOther, y1_step1ygainOther, y1_step1yminOther
+        )[0][0]
+    else:
+        # Atl
+        Xp1 = mapminmax_apply(
+            X, x1_step1xoffsetAtl, x1_step1gainAtl, x1_step1yminAtl
+        )
+        a1 = tansig_apply(tile_n_dot(b1Atl, IW1_1Atl, Xp1.T))
+        a2 = tansig_apply(tile_n_dot(np.array(b2Atl), LW2_1Atl, a1))
+        a3 = tile_n_dot(b3Atl, LW3_2Atl, a2)
+        YAtl = mapminmax_reverse(
+            a3, y1_step1xoffsetAtl, y1_step1ygainAtl, y1_step1yminAtl
+        )[0][0]
+        # Other
+        Xp1 = mapminmax_apply(
+            X,
+            x1_step1xoffsetOther,
+            x1_step1gainOther,
+            x1_step1yminOther,
+        )
+        a1 = tansig_apply(tile_n_dot(b1Other, IW1_1Other, Xp1.T))
+        a2 = tansig_apply(tile_n_dot(np.array(b2Other), LW2_1Other, a1))
+        a3 = tile_n_dot(b3Other, LW3_2Other, a2)
+        YOther = mapminmax_reverse(
+            a3, y1_step1xoffsetOther, y1_step1ygainOther, y1_step1yminOther
+        )[0][0]
 
     return YAtl, YOther
