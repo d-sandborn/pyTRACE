@@ -35,6 +35,7 @@ def trace_nn(
     per_kg_sw_tf=True,
     verbose_tf=True,
     eos="seawater",
+    delta_over_gamma=1.3038404810405297,
 ):
     """
     Implement ESPER NN estimation of properties for pyTRACE.
@@ -322,13 +323,16 @@ def trace_nn(
                     verbose_tf=verbose_tf,
                 )
                 """
-                est_atl[:, Net], est_other[:, Net] = execute_nn_combined_vectorized(
-                    P,
-                    VName,
-                    Equation,
-                    Net,
-                    DATADIR,
-                    verbose_tf=verbose_tf,
+                est_atl[:, Net], est_other[:, Net] = (
+                    execute_nn_combined_vectorized(
+                        P,
+                        VName,
+                        Equation,
+                        Net,
+                        DATADIR,
+                        verbose_tf=verbose_tf,
+                        delta_over_gamma=delta_over_gamma,
+                    )
                 )
 
         # Averaging across neural network committee members
@@ -629,12 +633,22 @@ def execute_nn_combined(X, VName, Equation, Net, DATADIR, verbose_tf=True):
 
     return YAtl, YOther
 
-def execute_nn_combined_vectorized(X, VName, Equation, Net, DATADIR, verbose_tf=True):
+
+def execute_nn_combined_vectorized(
+    X,
+    VName,
+    Equation,
+    Net,
+    DATADIR,
+    verbose_tf=True,
+    delta_over_gamma=1.3038404810405297,
+):
     """
     Execute neural network by calling pickle file with weights
     determined using MATLAB machine learning routines, followed by
     linear algebra replicating neural network architecture exactly.
     """
+    # with open(joinpath(pickle_picker(DATADIR, delta_over_gamma)), "rb") as f:
     with open(joinpath(DATADIR, "nn_params.pkl"), "rb") as f:
         dill = pickle.load(f)
     if VName == "Temperature":
@@ -698,7 +712,7 @@ def execute_nn_combined_vectorized(X, VName, Equation, Net, DATADIR, verbose_tf=
     TS = len(X)
     YAtl = np.full(TS, np.nan)
     YOther = np.full(TS, np.nan)
-    
+
     if Net == 0:
         # Atl
         Xp1 = mapminmax_apply(
@@ -747,3 +761,8 @@ def execute_nn_combined_vectorized(X, VName, Equation, Net, DATADIR, verbose_tf=
         )[0][0]
 
     return YAtl, YOther
+
+
+def pickle_picker(DATADIR, delta_over_gamma):
+    nearest_pickle = np.round(delta_over_gamma, 1)
+    return joinpath(DATADIR, f"nn_params_{nearest_pickle}.pkl")

@@ -387,6 +387,7 @@ def trace(
             DATADIR,
             verbose_tf=verbose_tf,
             eos=eos,
+            delta_over_gamma=delta_over_gamma,
         )
 
     # Load CO2 history
