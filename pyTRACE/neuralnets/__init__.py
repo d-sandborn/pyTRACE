@@ -35,7 +35,7 @@ def trace_nn(
     per_kg_sw_tf=True,
     verbose_tf=True,
     eos="seawater",
-    delta_over_gamma=1.3038404810405297,
+    delta_over_gamma=None,
 ):
     """
     Implement ESPER NN estimation of properties for pyTRACE.
@@ -641,40 +641,74 @@ def execute_nn_combined_vectorized(
     Net,
     DATADIR,
     verbose_tf=True,
-    delta_over_gamma=1.3038404810405297,
+    delta_over_gamma=None,
 ):
     """
     Execute neural network by calling pickle file with weights
     determined using MATLAB machine learning routines, followed by
     linear algebra replicating neural network architecture exactly.
     """
-    # with open(joinpath(pickle_picker(DATADIR, delta_over_gamma)), "rb") as f:
-    with open(joinpath(DATADIR, "nn_params.pkl"), "rb") as f:
-        dill = pickle.load(f)
-    if VName == "Temperature":
-        VName = "EstT_Temperature"
-        X = X[:, 0:5]
-    X = np.array(X)
-    dillAtl = dill[
-        "TRACE_"
-        + VName
-        + "_"
-        + str(Equation)
-        + "_"
-        + "Atl"
-        + "_"
-        + str(Net + 1)
-    ]
-    dillOther = dill[
-        "TRACE_"
-        + VName
-        + "_"
-        + str(Equation)
-        + "_"
-        + "Other"
-        + "_"
-        + str(Net + 1)
-    ]
+    if delta_over_gamma is None:  # default 1.3
+        with open(joinpath(DATADIR, "nn_params.pkl"), "rb") as f:
+            dill = pickle.load(f)
+        if VName == "Temperature":
+            VName = "EstT_Temperature"
+            X = X[:, 0:5]
+        X = np.array(X)
+        dillAtl = dill[
+            "TRACE_"
+            + VName
+            + "_"
+            + str(Equation)
+            + "_"
+            + "Atl"
+            + "_"
+            + str(Net + 1)
+        ]
+        dillOther = dill[
+            "TRACE_"
+            + VName
+            + "_"
+            + str(Equation)
+            + "_"
+            + "Other"
+            + "_"
+            + str(Net + 1)
+        ]
+    else:  # user-specified, pick nearest 0.2<=D/G<=1.8
+        with open(
+            joinpath(DATADIR, "nn_params_variable_igttd.pkl"), "rb"
+        ) as f:
+            dill = pickle.load(f)
+        if VName == "Temperature":
+            VName = "EstT_Temperature"
+            X = X[:, 0:5]
+        X = np.array(X)
+
+        dillAtl = dill[
+            "TRACE_"
+            + VName
+            + "_"
+            + str(Equation)
+            + "_"
+            + "Atl"
+            + "_"
+            + str(Net + 1)
+            + "_Iter_"
+            + pickle_picker(delta_over_gamma)
+        ]
+        dillOther = dill[
+            "TRACE_"
+            + VName
+            + "_"
+            + str(Equation)
+            + "_"
+            + "Other"
+            + "_"
+            + str(Net + 1)
+            + "_Iter_"
+            + pickle_picker(delta_over_gamma)
+        ]
     x1_step1Atl = dillAtl[0]
     b1Atl = np.array(dillAtl[1], dtype=np.float64)
     IW1_1Atl = np.array(dillAtl[2], dtype=np.float64)
@@ -763,6 +797,28 @@ def execute_nn_combined_vectorized(
     return YAtl, YOther
 
 
-def pickle_picker(DATADIR, delta_over_gamma):
-    nearest_pickle = np.round(delta_over_gamma, 1)
-    return joinpath(DATADIR, f"nn_params_{nearest_pickle}.pkl")
+def pickle_picker(delta_over_gamma):
+    mu = 2 * (delta_over_gamma) ** 2
+    available_mu = np.array(  # 2*(0.2<=D/G<=1.8)^2, round to 2 s.f.
+        [
+            0.080,
+            0.18,
+            0.32,
+            0.50,
+            0.72,
+            0.98,
+            1.3,
+            1.6,
+            2.0,
+            2.4,
+            2.9,
+            3.4,
+            3.9,
+            4.5,
+            5.1,
+            5.8,
+            6.5,
+        ]
+    )
+    nearest_mu = np.argmin(np.abs(available_mu - mu)) + 1
+    return str(nearest_mu)

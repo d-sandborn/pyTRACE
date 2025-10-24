@@ -44,7 +44,7 @@ def trace(
     atm_co2_trajectory: int = 1,
     preindustrial_xco2: float = 280.0,
     output_filename: str = None,
-    delta_over_gamma: float = 1.3038404810405297,
+    delta_over_gamma: float = None,
     verbose_tf=True,
     error_codes: list = [-999, -9, -1e20],
     canth_diseq: float = 1.0,
@@ -405,6 +405,11 @@ def trace(
     co2_rec = np.loadtxt(joinpath(DATADIR, "CO2TrajectoriesAdjusted.txt"))
     co2_rec = np.vstack([co2_rec[0, :], co2_rec])  # redundant??
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
+
+    if delta_over_gamma is None:  # if no D/G specified
+        delta_over_gamma = (
+            1.3038404810405297  # take default value == sqrt(3.4/2)
+        )
 
     ventilation = inverse_gaussian_wrapper(
         x=np.arange(0.01, 5.01, 0.01), delta_over_gamma=delta_over_gamma
