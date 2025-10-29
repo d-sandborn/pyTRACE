@@ -680,9 +680,6 @@ def execute_nn_combined_vectorized(
             joinpath(DATADIR, "nn_params_variable_igttd.pkl"), "rb"
         ) as f:
             dill = pickle.load(f)
-        if VName == "Temperature":
-            VName = "EstT_Temperature"
-            X = X[:, 0:5]
         X = np.array(X)
 
         dillAtl = dill[
@@ -756,7 +753,9 @@ def execute_nn_combined_vectorized(
         a2 = tile_n_dot(np.array([[b2Atl]]), LW2_1Atl, a1)
         YAtl = mapminmax_reverse(
             a2, y1_step1xoffsetAtl, y1_step1ygainAtl, y1_step1yminAtl
-        )[0][0]
+        )[
+            0
+        ]  # [0]
         # Other
         Xp1 = mapminmax_apply(
             X,
@@ -768,7 +767,9 @@ def execute_nn_combined_vectorized(
         a2 = tile_n_dot(np.array([[b2Other]]), LW2_1Other, a1)
         YOther = mapminmax_reverse(
             a2, y1_step1xoffsetOther, y1_step1ygainOther, y1_step1yminOther
-        )[0][0]
+        )[
+            0
+        ]  # [0]
     else:
         # Atl
         Xp1 = mapminmax_apply(
@@ -779,7 +780,9 @@ def execute_nn_combined_vectorized(
         a3 = tile_n_dot(b3Atl, LW3_2Atl, a2)
         YAtl = mapminmax_reverse(
             a3, y1_step1xoffsetAtl, y1_step1ygainAtl, y1_step1yminAtl
-        )[0][0]
+        )[
+            0
+        ]  # [0]
         # Other
         Xp1 = mapminmax_apply(
             X,
@@ -792,7 +795,9 @@ def execute_nn_combined_vectorized(
         a3 = tile_n_dot(b3Other, LW3_2Other, a2)
         YOther = mapminmax_reverse(
             a3, y1_step1xoffsetOther, y1_step1ygainOther, y1_step1yminOther
-        )[0][0]
+        )[
+            0
+        ]  # [0]
 
     return YAtl, YOther
 
