@@ -20,7 +20,7 @@ a16s = xr.open_dataset("33RO20131223_bottle.nc")
 combined_length = len(a16n.N_PROF) * len(a16n.N_LEVELS) + len(
     a16s.N_PROF
 ) * len(a16s.N_LEVELS)
-latlist = np.concat(
+latlist = np.concatenate(
     [
         (
             np.ones((len(a16n.N_PROF), len(a16n.N_LEVELS)))
@@ -32,7 +32,7 @@ latlist = np.concat(
         ).ravel(),
     ]
 )
-lonlist = np.concat(
+lonlist = np.concatenate(
     [
         (
             np.ones((len(a16n.N_PROF), len(a16n.N_LEVELS)))
@@ -48,11 +48,11 @@ input_df = pd.DataFrame(
     {
         "lat": latlist,
         "lon": lonlist,
-        "pressure": np.concat(
+        "pressure": np.concatenate(
             [a16n.pressure.data.ravel(), a16s.pressure.data.ravel()]
         ),
         "year": np.ones((combined_length)) * 2013,
-        "sal": np.concat(
+        "sal": np.concatenate(
             [
                 a16n.bottle_salinity.where(
                     a16n.bottle_salinity_qc == 2
@@ -62,7 +62,7 @@ input_df = pd.DataFrame(
                 ).data.ravel(),
             ]
         ),
-        "temp": np.concat(
+        "temp": np.concatenate(
             [
                 a16n.ctd_temperature.data.ravel(),
                 a16s.ctd_temperature.data.ravel(),

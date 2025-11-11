@@ -283,7 +283,7 @@ def trace_nn(
         L = io.loadmat(fn)
 
         output_estimates = np.full((output_coordinates.shape[0]), np.nan)
-        m = np.concat([C[:, 2][:, None], m[:, :]], axis=1)
+        m = np.concatenate([C[:, 2][:, None], m[:, :]], axis=1)
 
         est_atl = np.full((C.shape[0], 4), np.nan)
         est_other = np.full((C.shape[0], 4), np.nan)
