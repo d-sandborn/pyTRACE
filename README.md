@@ -13,7 +13,7 @@ Clone TRACE to your machine or download and unzip a [release](https://github.com
 ```bash
 python -m pip install -e .
 ```
-TRACE is not yet available via conda, but this is a target for future development if interest warrants it. Additionally, PyCO2SYS >= v2 is required for speed and stability purposes, and is installed by default using the command above. More information on that package can be found [here](https://mvdh.xyz/PyCO2SYS/).
+TRACE will be made available via pip once its dependencies are all available there. TRACE is not yet available via conda, but this is a target for future development if interest warrants it. PyCO2SYS >= v2 is required for speed and stability purposes, and is installed by default using the command above. More information on that package can be found [here](https://mvdh.xyz/PyCO2SYS/).
 
 ## Use
 
