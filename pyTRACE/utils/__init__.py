@@ -193,7 +193,7 @@ def inverse_gaussian_wrapper(x, delta_over_gamma=1.3038404810405297):
     distribution).
 
     lambda should perhaps be 1/1.3 from He et al.
-    Note that invgauss calls are different in pyTRACE and TRACE!
+    Note that invgauss calls are different in TRACE-Python and TRACEv1!
     Also note that TRACE approximates mu as 3.4 instead of ~3.38,
     leading to the default delta_over_gamma = sqrt(3.4/2).
     """
@@ -239,7 +239,7 @@ CC░▒▓█▓▒░CCC░▒▓█▓▒░░▒▓█▓▒░▒▓█▓
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-                         Python v0.2.0 beta
+                         Python v0.3.0 beta
                     
 Carter, B.; Sandborn D. 2025.
 https://doi.org/10.5194/essd-17-3073-2025
