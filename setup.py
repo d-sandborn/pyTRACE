@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-setup(name='pyTRACE',
+setup(name='trace',
       python_requires='>=3.10',
       version='0.1.0',
       description='Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) in Python',
