@@ -7,7 +7,7 @@ obtained from CCHDO.
 import pandas as pd
 import numpy as np
 import xarray as xr
-from pyTRACE import trace
+from TRACE import trace
 from seawater import dpth
 import matplotlib.pyplot as plt
 import scienceplots

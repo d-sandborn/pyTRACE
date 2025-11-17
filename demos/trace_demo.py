@@ -101,7 +101,7 @@ def _(gridx, gridy, np, output_1, plt):
 def _():
     import marimo as mo
     import matplotlib.pyplot as plt
-    from pyTRACE import trace
+    from TRACE import trace
     import numpy as np
     import pandas as pd
     import xarray as xr

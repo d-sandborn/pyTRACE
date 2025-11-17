@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from pyTRACE import trace, integrate_column
+from TRACE import trace, integrate_column
 
 
 def test_dummy():
@@ -9,7 +9,7 @@ def test_dummy():
 
 
 def test_trace_matlab():
-    """Is pyTRACE giving identical results to the TRACEv1 check values?"""
+    """Is TRACE giving identical results to the TRACEv1 check values?"""
     output = trace(
         output_coordinates=np.array([[0, 0, 0], [0, 0, 0]]),
         dates=np.array([2000, 2200]),
@@ -22,7 +22,7 @@ def test_trace_matlab():
 
 
 def test_trace_matlab_no_temperature():
-    """Is pyTRACE giving identical results to no-T TRACEv1 check values?"""
+    """Is TRACE giving identical results to no-T TRACEv1 check values?"""
     output = trace(
         output_coordinates=np.array([[0, 0, 0], [0, 0, 0]]),
         dates=np.array([2000, 2010]),

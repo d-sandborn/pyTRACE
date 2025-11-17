@@ -9,18 +9,18 @@ This routine generates estimates of ocean anthropogenic carbon content from user
 
 ## Setup
 
-Clone TRACE to your machine or download and unzip a [release](https://github.com/d-sandborn/pyTRACE/releases).  Ensure pip and python are installed in a virtual environment (we suggest [this method](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html)). pyTRACE can then be installed (as an editable install) by navigating to the unzipped directory of TRACE and running the following command in a terminal emulator
+Clone TRACE to your machine or download and unzip a [release](https://github.com/d-sandborn/pyTRACE/releases).  Ensure pip and python are installed in a virtual environment (we suggest [this method](https://mamba.readthedocs.io/en/latest/installation/mamba-installation.html)). TRACE can then be installed (as an editable install) by navigating to the unzipped directory of TRACE and running the following command in a terminal emulator
 ```bash
 python -m pip install -e .
 ```
-TRACE is not yet available via pypy or conda, but this is a target for future development if interest warrants it. Additionally, PyCO2SYS >= v2 is required for speed and stability purposes. Instructions to install the newest public beta for that package can be found [here](https://mvdh.xyz/PyCO2SYS/).
+TRACE is not yet available via conda, but this is a target for future development if interest warrants it. Additionally, PyCO2SYS >= v2 is required for speed and stability purposes, and is installed by default using the command above. More information on that package can be found [here](https://mvdh.xyz/PyCO2SYS/).
 
 ## Use
 
 Call TRACE within a Python script or iPython console by running 
 
 ```python
-from pyTRACE import trace
+from TRACE import trace
 ```
 
 which will make available the top-level function for anthropogenic carbon estimation. For details on its input and output parameters, run
@@ -150,7 +150,7 @@ The same result was obtained in TRACEv1: C<sub>anth</sub> = ```[56.0591 66.4567]
 A column integration function is available:
 
 ```python
-from pyTRACE import column_integration
+from TRACE import column_integration
 ```
 
 This function integrates concentrations (e.g. anthropogenic carbon) for a single location between user-provided depths via Piecewise Cubic Hermite Interpolating Polynomial ([PCHIP](https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.PchipInterpolator.html) followed by [Romberg](https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romb.html) numerical integration. While this function only calculates a column inventory at a single location, it is designed to be looped to produce regional or global inventories. 
