@@ -1,5 +1,5 @@
 """
-Top level module of pyTRACE.
+Top level module of TRACE.
 
 trace()
     Generates etimates of ocean anthropogenic carbon content from
@@ -237,7 +237,7 @@ def trace(
         predictor_types,
     )
 
-    # PyTRACE requires non-NaN coordinates to provide an estimate.  This step
+    # TRACE requires non-NaN coordinates to provide an estimate.  This step
     # eliminates NaN coordinate combinations prior to estimation.  NaN estimates
     # will be returned for these coordinates.
     valid_indices = ~np.logical_or(
@@ -266,7 +266,7 @@ def trace(
     for i in error_codes:
         if i in predictor_measurements:
             warnings.warn(
-                "A common non-NaN missing data indicator (e.g. -999, -9, -1e20) was detected in the input measurements provided.  Missing data should be replaced with np.nan, otherwise, PyTRACE will interpret your inputs at face value and give terrible estimates."
+                "A common non-NaN missing data indicator (e.g. -999, -9, -1e20) was detected in the input measurements provided.  Missing data should be replaced with np.nan, otherwise, TRACE will interpret your inputs at face value and give terrible estimates."
             )
 
     # Flag weird latitudes. Convert longitudes to 0-360.
