@@ -1,4 +1,4 @@
-"""Functions for neural network estimation in pyTRACE."""
+"""Functions for neural network estimation in TRACE."""
 
 import numpy as np
 import warnings
@@ -38,7 +38,7 @@ def trace_nn(
     delta_over_gamma=None,
 ):
     """
-    Implement ESPER NN estimation of properties for pyTRACE.
+    Implement ESPER NN estimation of properties for TRACE.
 
     Input/Output dimensions:
     .........................................................................
@@ -153,7 +153,7 @@ def trace_nn(
     for i in error_codes:
         if i in predictor_measurements:
             warnings.warn(
-                "A common non-NaN missing data indicator (e.g. -999, -9, -1e20) was detected in the input measurements provided.  Missing data should be replaced with np.nan, otherwise, PyTRACE will interpret your inputs at face value and give terrible estimates."
+                "A common non-NaN missing data indicator (e.g. -999, -9, -1e20) was detected in the input measurements provided.  Missing data should be replaced with np.nan, otherwise, TRACE will interpret your inputs at face value and give terrible estimates."
             )
 
     output_coordinates, C = coordinate_check(output_coordinates, valid_indices)
