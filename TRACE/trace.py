@@ -71,9 +71,9 @@ def trace(
     CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-                             Python v0.3.0 beta
+                             Python v1.0.0
 
-    Carter, B. R., Sandborn D. E. 2025.
+    Sandborn D. E., Carter, B. R., Barrett, R. 2025.
     https://doi.org/10.5194/essd-17-3073-2025
     MATLAB - github.com/BRCScienceProducts/TRACEv1
     Python - github.com/d-sandborn/pyTRACE
@@ -400,17 +400,14 @@ def trace(
     # consider altering canth_diseq below to modulate the degree of equilibrium.
     if verbose_tf:
         print(
-            "\nLoading CO2 History:"
-            + joinpath(DATADIR, "CO2TrajectoriesAdjusted.txt")
+            "\nLoading CO2 History:" + joinpath(DATADIR, "CO2TrajectoriesAdjusted.txt")
         )
     co2_rec = np.loadtxt(joinpath(DATADIR, "CO2TrajectoriesAdjusted.txt"))
     co2_rec = np.vstack([co2_rec[0, :], co2_rec])  # redundant??
     co2_rec[0, 0] = -1e10  # Set ancient CO2 to preindustrial placeholder
 
     if delta_over_gamma is None:  # if no D/G specified
-        delta_over_gamma = (
-            1.3038404810405297  # take default value == sqrt(3.4/2)
-        )
+        delta_over_gamma = 1.3038404810405297  # take default value == sqrt(3.4/2)
 
     ventilation = inverse_gaussian_wrapper(
         x=np.arange(0.01, 5.01, 0.01), delta_over_gamma=delta_over_gamma
@@ -418,9 +415,7 @@ def trace(
 
     # Interpolate CO2 based on ventilation and atmospheric trajectory
     co2_set = interp1d(co2_rec[:, 0], co2_rec[:, atm_co2_trajectory])
-    co2_set = co2_set(
-        dates[:, None] - sfs["SFs"].reshape(-1, 1) * np.arange(1, 501)
-    )
+    co2_set = co2_set(dates[:, None] - sfs["SFs"].reshape(-1, 1) * np.arange(1, 501))
     co2_set = co2_set.dot(ventilation.T)
 
     # Calculate transit times (assumed based on ventilation)
@@ -445,9 +440,7 @@ def trace(
     out = pyco2.sys(
         alkalinity=pref_props_sub["Preformed_TA"],
         pCO2=vpfac
-        * (
-            canth_diseq * (co2_set.T - preindustrial_xco2) + preindustrial_xco2
-        ),
+        * (canth_diseq * (co2_set.T - preindustrial_xco2) + preindustrial_xco2),
         salinity=m_all[:, 0],
         temperature=m_all[:, 1],
         pressure=0,
@@ -499,9 +492,7 @@ def trace(
             ),
             mean_age=(
                 ["loc"],
-                create_vector_with_values(
-                    len(output_coordinates), valid_indices, age
-                ),
+                create_vector_with_values(len(output_coordinates), valid_indices, age),
                 {
                     "units": "year",
                     "long_name": "mean water mass age",
@@ -521,9 +512,7 @@ def trace(
             ),
             dic=(
                 ["loc"],
-                create_vector_with_values(
-                    len(output_coordinates), valid_indices, out
-                ),
+                create_vector_with_values(len(output_coordinates), valid_indices, out),
                 {
                     "units": "micromole kg-1",
                     "long_name": "dissolved inorganic carbon",
@@ -727,7 +716,7 @@ def trace(
         attrs=dict(
             Conventions="CF-1.10",
             description="Results of Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE)",
-            history="TRACE version 0.3.0 (beta), "
+            history="TRACE version 1.0.0, "
             + str(datetime.datetime.now())
             + " Python "
             + sys.version

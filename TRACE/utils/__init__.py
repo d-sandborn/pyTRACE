@@ -28,9 +28,7 @@ def equation_check(equation):
         case [1]:
             equation = [1]
         case _:
-            warnings.warn(
-                "Input 'equations' could not be parsed. Setting to [1]."
-            )
+            warnings.warn("Input 'equations' could not be parsed. Setting to [1].")
             equation = [1]
     return equation
 
@@ -40,9 +38,7 @@ def units_check(per_kg_sw_tf):
 
     This input is not needed for TRACE, currently."""
     if not per_kg_sw_tf:
-        warnings.warn(
-            "Optional argument per_kg_sw_tf is not in use. Setting to True."
-        )
+        warnings.warn("Optional argument per_kg_sw_tf is not in use. Setting to True.")
         per_kg_sw_tf = True
     return per_kg_sw_tf
 
@@ -79,9 +75,7 @@ def uncerts_check(meas_uncerts, predictor_measurements, predictor_types):
             )
         if (
             (not np.max(np.shape(meas_uncerts)) == len(predictor_measurements))
-            and not np.min(
-                np.shape(meas_uncerts) == len(predictor_measurements)
-            )
+            and not np.min(np.shape(meas_uncerts) == len(predictor_measurements))
             and not np.max(np.size(meas_uncerts)) == 0
         ):
             warnings.warn(
@@ -135,9 +129,7 @@ def depth_check(output_coordinates, valid_indices):
     except Exception as e:
         print(f"{e}\nCould not convert output_coordinates to a numpy array.")
     if np.any(output_coordinates[valid_indices, 2] < 0):
-        warnings.warn(
-            "Negative depths were detected and changed to positive values."
-        )
+        warnings.warn("Negative depths were detected and changed to positive values.")
         output_coordinates[valid_indices, 2] = np.abs(
             output_coordinates[valid_indices, 2]
         )
@@ -170,12 +162,12 @@ def prepare_uncertainties(
         predictor_measurements
         * default_uncertainties[predictor_types - 1, predictor_types - 1]
     )  # Setting multiplicative default uncertainties for P, N, O2, and Si.
-    default_u_all[:, np.argwhere(predictor_types == 1)] = (
-        0.003  # Then setting additive default uncertainties for T
-    )
-    default_u_all[:, np.argwhere(predictor_types == 2)] = (
-        0.003  # Then setting additive default uncertainties for S
-    )
+    default_u_all[
+        :, np.argwhere(predictor_types == 1)
+    ] = 0.003  # Then setting additive default uncertainties for T
+    default_u_all[
+        :, np.argwhere(predictor_types == 2)
+    ] = 0.003  # Then setting additive default uncertainties for S
     default_u_all = default_u_all[valid_indices, :]
     input_u_all = default_u_all
     if not use_default_uncertainties:  # if user supplied uncertainties
@@ -207,9 +199,7 @@ def inverse_gaussian_wrapper(x, delta_over_gamma=1.3038404810405297):
 def inpolygon(xq, yq, xv, yv):
     """Test for points in polygon."""
     polygon_geom = Polygon(zip(xv, yv))
-    polygon = gpd.GeoDataFrame(
-        index=[0], crs="epsg:4326", geometry=[polygon_geom]
-    )
+    polygon = gpd.GeoDataFrame(index=[0], crs="epsg:4326", geometry=[polygon_geom])
     geo = gpd.points_from_xy(xq, yq)
     points = gpd.GeoDataFrame(geometry=geo, crs=polygon.crs)
     pointInPolys = points.intersects(polygon.union_all())
@@ -239,9 +229,9 @@ CC░▒▓█▓▒░CCC░▒▓█▓▒░░▒▓█▓▒░▒▓█▓
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
-                         Python v0.3.0 beta
-                    
-Carter, B.; Sandborn D. 2025.
+                         Python v1.0.0
+
+Sandborn D. E., Carter, B. R., Barrett, R. 2025.
 https://doi.org/10.5194/essd-17-3073-2025
 MATLAB - github.com/BRCScienceProducts/TRACEv1
 Python - github.com/d-sandborn/pyTRACE"""
@@ -258,9 +248,7 @@ def decimal_year_to_iso_timestamp(  # for CF Conventions
         fraction = decimal_year - year
 
         days_in_year = (
-            366
-            if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
-            else 365
+            366 if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0) else 365
         )
 
         total_seconds_in_year = days_in_year * 24 * 60 * 60
@@ -270,9 +258,7 @@ def decimal_year_to_iso_timestamp(  # for CF Conventions
             year, 1, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc
         )
 
-        dt_object_utc = start_of_year_utc + datetime.timedelta(
-            seconds=offset_seconds
-        )
+        dt_object_utc = start_of_year_utc + datetime.timedelta(seconds=offset_seconds)
 
         iso_timestamp = dt_object_utc.isoformat(timespec="seconds").replace(
             "+00:00", "Z"
@@ -280,9 +266,7 @@ def decimal_year_to_iso_timestamp(  # for CF Conventions
         return iso_timestamp
 
     if isinstance(decimal_year_input, np.ndarray):
-        vectorized_converter = np.vectorize(
-            _convert_single_decimal_year, otypes=[str]
-        )
+        vectorized_converter = np.vectorize(_convert_single_decimal_year, otypes=[str])
         return vectorized_converter(decimal_year_input)
     else:
         return _convert_single_decimal_year(decimal_year_input)
