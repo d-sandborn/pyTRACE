@@ -20,7 +20,7 @@ TRACE will be made available via pip once its dependencies are all available the
 Call TRACE within a Python script or iPython console by running 
 
 ```python
-from TRACE import trace
+from tracepy import trace
 ```
 
 which will make available the top-level function for anthropogenic carbon estimation. For details on its input and output parameters, run
