@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from TRACE import trace, integrate_column
+from tracepy import trace, integrate_column
 
 
 def test_dummy():
@@ -17,7 +17,7 @@ def test_trace_matlab():
         predictor_types=np.array([1, 2]),
         atm_co2_trajectory=9,
     )
-    assert np.abs(output.canth.data[0] - 47.7868563)  < 0.00001
+    assert np.abs(output.canth.data[0] - 47.7868563) < 0.00001
     assert np.abs(output.canth.data[1] - 79.8749319) < 0.00001
 
 

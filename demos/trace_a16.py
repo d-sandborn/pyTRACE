@@ -7,7 +7,7 @@ obtained from CCHDO.
 import pandas as pd
 import numpy as np
 import xarray as xr
-from TRACE import trace
+from tracepy import trace
 from seawater import dpth
 import matplotlib.pyplot as plt
 import scienceplots
@@ -17,9 +17,9 @@ from scipy.interpolate import griddata
 plt.style.use("science")
 a16n = xr.open_dataset("33RO20130803_bottle.nc")
 a16s = xr.open_dataset("33RO20131223_bottle.nc")
-combined_length = len(a16n.N_PROF) * len(a16n.N_LEVELS) + len(
-    a16s.N_PROF
-) * len(a16s.N_LEVELS)
+combined_length = len(a16n.N_PROF) * len(a16n.N_LEVELS) + len(a16s.N_PROF) * len(
+    a16s.N_LEVELS
+)
 latlist = np.concatenate(
     [
         (
@@ -54,12 +54,8 @@ input_df = pd.DataFrame(
         "year": np.ones((combined_length)) * 2013,
         "sal": np.concatenate(
             [
-                a16n.bottle_salinity.where(
-                    a16n.bottle_salinity_qc == 2
-                ).data.ravel(),
-                a16s.bottle_salinity.where(
-                    a16s.bottle_salinity_qc == 2
-                ).data.ravel(),
+                a16n.bottle_salinity.where(a16n.bottle_salinity_qc == 2).data.ravel(),
+                a16s.bottle_salinity.where(a16s.bottle_salinity_qc == 2).data.ravel(),
             ]
         ),
         "temp": np.concatenate(
