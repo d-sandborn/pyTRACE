@@ -1,4 +1,4 @@
-name: docs 
+name: docs
 on:
   push:
     branches:
@@ -10,22 +10,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Configure Git Credentials
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV 
+      - uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: ~/.cache 
+          restore-keys: |
+            mkdocs-material-
       - run: pip install mkdocs-material 
       - run: mkdocs gh-deploy --force
-      - uses: actions/checkout@v4
-        with:
-          ref: gh-pages
-      - run: echo "pyco2sys.hseao3.group" > CNAME
-     - name: Commit changes
-        run: |
-          git config --global user.email "no-reply@github.com"
-          git config --global user.name "GitHub Actions"
-          git add CNAME
-          git commit -m "Create CNAME"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git push
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
