@@ -1,0 +1,1043 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Tracer-based Rapid Anthropogenic Carbon Estimation">
+      
+      
+        <meta name="author" content="Daniel E. Sandborn">
+      
+      
+        <link rel="canonical" href="https://d-sandborn.io/TRACE/trace_howto/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../versions/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>How to use TRACE - TRACE</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+  
+  
+  
+  
+  <style>:root{--md-annotation-icon:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M17%2013h-4v4h-2v-4H7v-2h4V7h2v4h4m-5-9A10%2010%200%200%200%202%2012a10%2010%200%200%200%2010%2010%2010%2010%200%200%200%2010-10A10%2010%200%200%200%2012%202%22/%3E%3C/svg%3E');}</style>
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans:300,300i,400,400i,700,700i%7CNoto+Sans+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Noto Sans";--md-code-font:"Noto Sans Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#using-trace" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="TRACE" class="md-header__button md-logo" aria-label="TRACE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            TRACE
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              How to use TRACE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/d-sandborn/TRACE" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    d-sandborn/TRACE
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="TRACE" class="md-nav__button md-logo" aria-label="TRACE" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    TRACE
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/d-sandborn/TRACE" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    d-sandborn/TRACE
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to use TRACE
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to use TRACE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#general-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Use
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estimation-without-temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimation without temperature
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other Options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coordinates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predictors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Predictors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#atmospheric-co2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Atmospheric CO2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyco2sys-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyCO2SYS Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preformed-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preformed Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#miscellaneous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Miscellaneous
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../versions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version history
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#general-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Use
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estimation-without-temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estimation without temperature
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other Options
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Options">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coordinates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coordinates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predictors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Predictors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#atmospheric-co2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Atmospheric CO2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyco2sys-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyCO2SYS Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preformed-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preformed Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#miscellaneous" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Miscellaneous
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="using-trace">Using TRACE<a class="headerlink" href="#using-trace" title="Permanent link">&para;</a></h1>
+<p>TRACE may be used to generate point estimates of anthropogenic carbon at one or more locations under default assumptions. This is demonstrated under <strong>General Use</strong>, below. More options are explained in the following sections. </p>
+<h2 id="general-use">General Use<a class="headerlink" href="#general-use" title="Permanent link">&para;</a></h2>
+<p>Call TRACE within a Python script or iPython console by running </p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tracepy</span><span class="w"> </span><span class="kn">import</span> <span class="n">trace</span>
+</code></pre></div>
+<p>which will make available the top-level function for anthropogenic carbon estimation. For details on its input and output parameters, see the API description below, or call</p>
+<div class="highlight"><pre><span></span><code><span class="err">?</span><span class="n">trace</span>
+</code></pre></div>
+<p>To estimate anthropogenic carbon (C<sub>anth</sub>) at the surface ocean at the equator/prime meridian in the years 2000 and 2200 assuming IPCC pathway SSP5_3.4_over:</p>
+<div class="highlight"><pre><span></span><code><span class="n">output</span> <span class="o">=</span> <span class="n">trace</span><span class="p">(</span>
+    <span class="n">output_coordinates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]),</span>
+    <span class="n">dates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">2200</span><span class="p">]),</span>
+    <span class="n">predictor_measurements</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">20</span><span class="p">]]),</span>
+    <span class="n">predictor_types</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
+    <span class="n">atm_co2_trajectory</span><span class="o">=</span><span class="mi">9</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>which returns an <a href="https://docs.xarray.dev/en/latest/generated/xarray.Dataset.html">xarray dataset</a> containing C<sub>anth</sub> at the specified dates and times, its uncertainties, and associated metadata. More examples can be found in the <code>demos</code> folder. Attributes of the <a href="https://cfconventions.org/">CF-compliant</a> dataset describe the variables and their units.</p>
+<div class="highlight"><pre><span></span><code><span class="n">output</span>
+
+<span class="o">&lt;</span><span class="n">xarray</span><span class="o">.</span><span class="n">Dataset</span><span class="o">&gt;</span> <span class="n">Size</span><span class="p">:</span> <span class="mi">448</span><span class="n">B</span>
+<span class="n">Dimensions</span><span class="p">:</span>           <span class="p">(</span><span class="n">loc</span><span class="p">:</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Coordinates</span><span class="p">:</span>
+    <span class="n">year</span>              <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="o">&lt;</span><span class="n">U20</span> <span class="mi">160</span><span class="n">B</span> <span class="s1">&#39;2000-01-01T00:00:00Z&#39;</span> <span class="s1">&#39;2200-01-01T00:0...</span>
+    <span class="n">lon</span>               <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">int64</span> <span class="mi">16</span><span class="n">B</span> <span class="mi">0</span> <span class="mi">0</span>
+    <span class="n">lat</span>               <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">int64</span> <span class="mi">16</span><span class="n">B</span> <span class="mi">0</span> <span class="mi">0</span>
+    <span class="n">depth</span>             <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">int64</span> <span class="mi">16</span><span class="n">B</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="n">Dimensions</span> <span class="n">without</span> <span class="n">coordinates</span><span class="p">:</span> <span class="n">loc</span>
+<span class="n">Data</span> <span class="n">variables</span><span class="p">:</span>
+    <span class="n">canth</span>             <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">47.79</span> <span class="mf">79.87</span>
+    <span class="n">mean_age</span>          <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">7.224</span> <span class="mf">7.224</span>
+    <span class="n">mode_age</span>          <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">1.697</span> <span class="mf">1.697</span>
+    <span class="n">dic</span>               <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">1.994e+03</span> <span class="mf">2.026e+03</span>
+    <span class="n">dic_ref</span>           <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">1.946e+03</span> <span class="mf">1.946e+03</span>
+    <span class="n">pco2</span>              <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">325.1</span> <span class="mf">380.7</span>
+    <span class="n">pco2_ref</span>          <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">260.0</span> <span class="mf">260.0</span>
+    <span class="n">preformed_ta</span>      <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">2.296e+03</span> <span class="mf">2.296e+03</span>
+    <span class="n">preformed_si</span>      <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">2.167</span> <span class="mf">2.167</span>
+    <span class="n">preformed_p</span>       <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">0.5108</span> <span class="mf">0.5108</span>
+    <span class="n">temperature</span>       <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">20.0</span> <span class="mf">20.0</span>
+    <span class="n">salinity</span>          <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">35.0</span> <span class="mf">35.0</span>
+    <span class="n">u_canth</span>           <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">8.645</span> <span class="mf">12.92</span>
+    <span class="n">delta_over_gamma</span>  <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">1.3</span> <span class="mf">1.3</span>
+    <span class="n">scale_factors</span>     <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">0.05143</span> <span class="mf">0.05143</span>
+<span class="n">Attributes</span><span class="p">:</span>
+    <span class="n">Conventions</span><span class="p">:</span>        <span class="n">CF</span><span class="o">-</span><span class="mf">1.10</span>
+    <span class="n">description</span><span class="p">:</span>        <span class="n">Results</span> <span class="n">of</span> <span class="n">Tracer</span><span class="o">-</span><span class="n">based</span> <span class="n">Rapid</span> <span class="n">Anthropogenic</span> <span class="n">Carbon</span> <span class="n">Es</span><span class="o">...</span>
+    <span class="n">history</span><span class="p">:</span>            <span class="n">TRACE</span> <span class="n">version</span> <span class="mf">1.0.0</span><span class="p">,</span> <span class="o">...</span>
+    <span class="n">date_created</span><span class="p">:</span>       <span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">16</span> <span class="mi">19</span><span class="p">:</span><span class="mi">36</span><span class="p">:</span><span class="mf">23.452010</span>
+    <span class="n">references</span><span class="p">:</span>         <span class="n">doi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mf">10.5194</span><span class="o">/</span><span class="n">essd</span><span class="o">-</span><span class="mi">2024</span><span class="o">-</span><span class="mi">560</span>
+    <span class="n">co2sys_parameters</span><span class="p">:</span>  <span class="n">opt_pH_scale</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">opt_k_carbonic</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="n">opt_k_HSO4</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">o</span><span class="o">...</span>
+    <span class="n">trace_parameters</span><span class="p">:</span>   <span class="n">per_kg_sw_tf</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="n">canth_diseq</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">eos</span><span class="p">:</span> <span class="n">seawater</span><span class="p">,</span> <span class="o">...</span>
+
+<span class="n">output</span><span class="o">.</span><span class="n">canth</span><span class="o">.</span><span class="n">data</span>
+
+<span class="n">array</span><span class="p">([</span><span class="mf">47.78685407</span><span class="p">,</span> <span class="mf">79.87492991</span><span class="p">])</span>
+</code></pre></div>
+<p>This result above agrees exactly with TRACEv1, which gives C<sub>anth</sub> = <code>[47.7869 79.8749]</code> for the same inputs.</p>
+<h2 id="estimation-without-temperature">Estimation without temperature<a class="headerlink" href="#estimation-without-temperature" title="Permanent link">&para;</a></h2>
+<p>Calling <code>trace</code> without a temperature input will cause it to estimate temperature from salinity and coordinates via a neural network. This is <strong>not</strong> recommended, but will yield results (with a warning) as in TRACEv1:</p>
+<div class="highlight"><pre><span></span><code><span class="n">output</span> <span class="o">=</span> <span class="n">trace</span><span class="p">(</span>
+    <span class="n">output_coordinates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]),</span>
+    <span class="n">dates</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">2010</span><span class="p">]),</span>
+    <span class="n">predictor_measurements</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">35</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">]]),</span>
+    <span class="n">predictor_types</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>
+    <span class="n">atm_co2_trajectory</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="ne">UserWarning</span><span class="p">:</span> <span class="n">Temperature</span> <span class="ow">is</span> <span class="n">being</span> <span class="n">estimated</span> <span class="kn">from</span><span class="w"> </span><span class="nn">salinity</span> <span class="ow">and</span> <span class="n">coordinate</span> <span class="n">information</span><span class="o">.</span>
+
+<span class="n">output</span>
+
+<span class="o">&lt;</span><span class="n">xarray</span><span class="o">.</span><span class="n">Dataset</span><span class="o">&gt;</span> <span class="n">Size</span><span class="p">:</span> <span class="mi">448</span><span class="n">B</span>
+<span class="n">Dimensions</span><span class="p">:</span>           <span class="p">(</span><span class="n">loc</span><span class="p">:</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">Coordinates</span><span class="p">:</span>
+    <span class="n">year</span>              <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="o">&lt;</span><span class="n">U20</span> <span class="mi">160</span><span class="n">B</span> <span class="s1">&#39;2000-01-01T00:00:00Z&#39;</span> <span class="s1">&#39;2010-01-01T00:0...</span>
+    <span class="n">lon</span>               <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">int64</span> <span class="mi">16</span><span class="n">B</span> <span class="mi">0</span> <span class="mi">0</span>
+    <span class="n">lat</span>               <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">int64</span> <span class="mi">16</span><span class="n">B</span> <span class="mi">0</span> <span class="mi">0</span>
+    <span class="n">depth</span>             <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">int64</span> <span class="mi">16</span><span class="n">B</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="n">Dimensions</span> <span class="n">without</span> <span class="n">coordinates</span><span class="p">:</span> <span class="n">loc</span>
+<span class="n">Data</span> <span class="n">variables</span><span class="p">:</span>
+    <span class="n">canth</span>             <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">56.06</span> <span class="mf">66.46</span>
+    <span class="n">mean_age</span>          <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">1.883</span> <span class="mf">1.883</span>
+    <span class="n">mode_age</span>          <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">0.4424</span> <span class="mf">0.4424</span>
+    <span class="n">dic</span>               <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">1.925e+03</span> <span class="mf">1.935e+03</span>
+    <span class="n">dic_ref</span>           <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">1.869e+03</span> <span class="mf">1.869e+03</span>
+    <span class="n">pco2</span>              <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">322.4</span> <span class="mf">337.9</span>
+    <span class="n">pco2_ref</span>          <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">252.0</span> <span class="mf">252.0</span>
+    <span class="n">preformed_ta</span>      <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">2.282e+03</span> <span class="mf">2.282e+03</span>
+    <span class="n">preformed_si</span>      <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">1.787</span> <span class="mf">1.787</span>
+    <span class="n">preformed_p</span>       <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">0.08551</span> <span class="mf">0.08551</span>
+    <span class="n">temperature</span>       <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">26.47</span> <span class="mf">26.47</span>
+    <span class="n">salinity</span>          <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">35.0</span> <span class="mf">35.0</span>
+    <span class="n">u_canth</span>           <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">9.699</span> <span class="mf">11.08</span>
+    <span class="n">delta_over_gamma</span>  <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">1.3</span> <span class="mf">1.3</span>
+    <span class="n">scale_factors</span>     <span class="p">(</span><span class="n">loc</span><span class="p">)</span> <span class="n">float64</span> <span class="mi">16</span><span class="n">B</span> <span class="mf">0.01341</span> <span class="mf">0.01341</span>
+<span class="n">Attributes</span><span class="p">:</span>
+    <span class="n">Conventions</span><span class="p">:</span>        <span class="n">CF</span><span class="o">-</span><span class="mf">1.10</span>
+    <span class="n">description</span><span class="p">:</span>        <span class="n">Results</span> <span class="n">of</span> <span class="n">Tracer</span><span class="o">-</span><span class="n">based</span> <span class="n">Rapid</span> <span class="n">Anthropogenic</span> <span class="n">Carbon</span> <span class="n">Es</span><span class="o">...</span>
+    <span class="n">history</span><span class="p">:</span>            <span class="n">TRACE</span> <span class="n">version</span> <span class="mf">0.2.0</span> <span class="p">(</span><span class="n">beta</span><span class="p">),</span> <span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">16</span> <span class="mi">19</span><span class="p">:</span><span class="mi">36</span><span class="p">:</span><span class="mf">55.79208</span><span class="o">...</span>
+    <span class="n">date_created</span><span class="p">:</span>       <span class="mi">2025</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">16</span> <span class="mi">19</span><span class="p">:</span><span class="mi">36</span><span class="p">:</span><span class="mf">55.792097</span>
+    <span class="n">references</span><span class="p">:</span>         <span class="n">doi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mf">10.5194</span><span class="o">/</span><span class="n">essd</span><span class="o">-</span><span class="mi">2024</span><span class="o">-</span><span class="mi">560</span>
+    <span class="n">co2sys_parameters</span><span class="p">:</span>  <span class="n">opt_pH_scale</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">opt_k_carbonic</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="n">opt_k_HSO4</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">o</span><span class="o">...</span>
+    <span class="n">trace_parameters</span><span class="p">:</span>   <span class="n">per_kg_sw_tf</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="n">canth_diseq</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">eos</span><span class="p">:</span> <span class="n">seawater</span><span class="p">,</span> <span class="o">...</span>
+
+<span class="n">output</span><span class="o">.</span><span class="n">canth</span><span class="o">.</span><span class="n">data</span>
+
+<span class="n">array</span><span class="p">([</span><span class="mf">56.059132</span><span class="p">,</span> <span class="mf">66.45668126</span><span class="p">])</span>
+</code></pre></div>
+<p>The same result was obtained in TRACEv1: C<sub>anth</sub> = <code>[56.0591 66.4567]</code> for the same inputs.</p>
+<h2 id="other-options">Other Options<a class="headerlink" href="#other-options" title="Permanent link">&para;</a></h2>
+<p>Each argument to <code>trace</code> can either be a single scalar value (float or int), or an array given as a list or Numpy array containing a series of values. <code>trace</code> remains regrettably sensitive to argument formatting, so please check your input array dimensions and reach out with any problems (or solutions).</p>
+<div class="admonition inputs">
+<p class="admonition-title"><code>trace</code> Arguments</p>
+<p>Necessary input arguments include <code>output_coordinates</code>, <code>dates</code>, <code>predictor_measurements</code>, and <code>predictor_types</code>. All other parameters are optional, with their default values listed below. </p>
+<h4 id="coordinates">Coordinates<a class="headerlink" href="#coordinates" title="Permanent link">&para;</a></h4>
+<p>Each of n rows of output coordinates and dates indicates a single location in space/time at which an estimation is made. <code>trace</code> cannot presently handle multidimensional (e.g. latitude/longitude/depth) arrays of coordinates: they must be <a href="https://numpy.org/doc/stable/reference/generated/numpy.ravel.html">flattened</a> to one-dimensional vectors, then concatenated into the columns as described below. </p>
+<ul>
+<li>
+<p><code>output_coordinates</code>: n by 3 array of coordinates (longitude decimal degrees E, latitude decimal degrees N, depth m, in that order) at which estimates are desired.</p>
+</li>
+<li>
+<p><code>dates</code>: n by 1 array of years c.e. for which estimates are desired. </p>
+</li>
+</ul>
+<h4 id="predictors">Predictors<a class="headerlink" href="#predictors" title="Permanent link">&para;</a></h4>
+<p>Unlike for ESPER or PyESPER, only salinity and temperature are accepted predictors for age and other preformed properties. </p>
+<ul>
+<li>
+<p><code>predictor_measurements</code>: n by y array of y parameter measurements (salinity, temperature). The column order (y columns) is specified by predictor_types. Temperature should be expressed as degrees C and salinity should be specified on the practical scale with the unitless convention. nan inputs are acceptable, but will lead to nan estimates for any equations that depend on that parameter. If temperature is not provided it will be estimated from salinity (not recommended).</p>
+</li>
+<li>
+<p><code>predictor_types</code> : 1 by y array indicating which parameter is in each column of 'predictor_measurements'. Note that salinity is required for all equations. This applies to all n estimates. Input parameter key:</p>
+<ul>
+<li><code>1</code>. Salinity</li>
+<li><code>2</code>. Temperature</li>
+</ul>
+</li>
+</ul>
+<h4 id="atmospheric-co2">Atmospheric CO2<a class="headerlink" href="#atmospheric-co2" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<ul>
+<li><code>1</code>. Historical/Linear <strong>(default)</strong></li>
+<li><code>2</code>. SSP1_1.9</li>
+<li><code>3</code>. SSP1_2.6</li>
+<li><code>4</code>. SSP2_4.5</li>
+<li><code>5</code>. SSP3_7.0</li>
+<li><code>6</code>. SSP3_7.0_lowNTCF</li>
+<li><code>7</code>. SSP4_3.4</li>
+<li><code>8</code>. SSP4_6.0</li>
+<li><code>9</code>. SSP5_3.4_over</li>
+</ul>
+<p><code>atm_co2_trajectory</code> : Integer between 1 and 9 specifying the atmospheric xCO2 trajectory:</p>
+<p>Custom columns can be added to the data/CO2TrajectoreisAdjusted.txt file and referenced here.</p>
+</li>
+<li>
+<p><code>preindustrial_xco2</code> : Optional preindustrial reference xCO2 value. The default is <code>280</code>.</p>
+</li>
+<li>
+<p><code>canth_diseq</code> : Air-sea carbon dioxide equilibrium assumed for calculation of pCO2 as a function of atmospheric CO2. This should only be used if user-provided atmospheric trajectories not otherwise modified for anthropogenic carbon disequilibrium are being supplied. The default is <code>1</code>.</p>
+</li>
+</ul>
+<h4 id="output-options">Output Options<a class="headerlink" href="#output-options" title="Permanent link">&para;</a></h4>
+<p><code>trace</code> returns a CF-compliant dataset, which may be directly saved to a file for ease of data archival and scientific replicability. </p>
+<ul>
+<li>
+<p><code>output_filename</code>: Filename for <code>trace</code> output to be saved in current working directory. If no filename is given, no file will be saved. Presently only NETCDF4 (.nc) files can be saved.  The default is <code>None</code>.</p>
+</li>
+<li>
+<p><code>verbose_tf</code> : Flag to control output verbosity. Setting this to False will make <code>trace</code> stop printing updates to the command line.  Warnings and errors, if any, will be given regardless. The default is <code>True</code>.</p>
+</li>
+</ul>
+<h4 id="pyco2sys-options">PyCO2SYS Options<a class="headerlink" href="#pyco2sys-options" title="Permanent link">&para;</a></h4>
+<p><em>The descriptions here derive in part from the <a href="https://pyco2sys.readthedocs.io/en/latest/co2sys_nd/">PyCO2SYS docs</a></em> which the interested reader should consult for further explanation. </p>
+<ul>
+<li>
+<p><code>opt_pH_scale</code>: PyCO2SYS option for pH scale:</p>
+<ul>
+<li><code>1</code>. Total, i.e. <span class="arithmatex"><span class="MathJax_Preview">\mathrm{pH} = -\log_{10} ([\mathrm{H}^+] + [\mathrm{HSO}_4^-])</span><script type="math/tex">\mathrm{pH} = -\log_{10} ([\mathrm{H}^+] + [\mathrm{HSO}_4^-])</script></span> <strong>(default)</strong></li>
+<li><code>2</code>. Seawater, i.e. <span class="arithmatex"><span class="MathJax_Preview">\mathrm{pH} = -\log_{10} ([\mathrm{H}^+] + [\mathrm{HSO}_4^-] + [\mathrm{HF}])</span><script type="math/tex">\mathrm{pH} = -\log_{10} ([\mathrm{H}^+] + [\mathrm{HSO}_4^-] + [\mathrm{HF}])</script></span></li>
+<li><code>3</code>. Free, i.e. <span class="arithmatex"><span class="MathJax_Preview">\mathrm{pH} = -\log_{10} [\mathrm{H}^+]</span><script type="math/tex">\mathrm{pH} = -\log_{10} [\mathrm{H}^+]</script></span></li>
+<li><code>4</code>. NBS, i.e. relative to <a href="https://www.nist.gov/history/nist-100-foundations-progress/nbs-nist">NBS/NIST</a> reference standards</li>
+</ul>
+</li>
+<li>
+<p><code>opt_k_carbonic</code>: PyCO2SYS option for carbonic acid dissociation constants:</p>
+<ul>
+<li><code>1</code>: RRV93 (0 &lt; <em>T</em> &lt; 45 °C, 5 &lt; <em>S</em> &lt; 45, Total scale, artificial seawater)</li>
+<li><code>2</code>: GP89 (−1 &lt; <em>T</em> &lt; 40 °C, 10 &lt; <em>S</em> &lt; 50, Seawater scale, artificial seawater)</li>
+<li><code>3</code>: H73a and H73b refit by DM87 (2 &lt; <em>T</em> &lt; 35 °C, 20 &lt; <em>S</em> &lt; 40, Seawater scale, artificial seawater)</li>
+<li><code>4</code>: MCHP73 refit by DM87 (2 &lt; <em>T</em> &lt; 35 °C, 20 &lt; <em>S</em> &lt; 40, Seawater scale, real seawater)</li>
+<li><code>5</code>: H73a, H73b and <a href="../refs/#m">MCHP73</a> refit by <a href="../refs/#d">DM87</a> (2 &lt; <em>T</em> &lt; 35 °C, 20 &lt; <em>S</em> &lt; 40, Seawater scale, artificial seawater)</li>
+<li><code>6</code>: MCHP73 aka "GEOSECS" (2 &lt; <em>T</em> &lt; 35 °C, 19 &lt; <em>S</em> &lt; 43, NBS scale, real seawater)</li>
+<li><code>7</code>: MCHP73 without certain species aka "Peng" (2 &lt; <em>T</em> &lt; 35 °C, 19 &lt; <em>S</em> &lt; 43, NBS scale, real seawater)</li>
+<li><code>8</code>: M79 (0 &lt; <em>T</em> &lt; 50 °C, <em>S</em> = 0, freshwater only)</li>
+<li><code>9</code>: CW98 (2 &lt; <em>T</em> &lt; 30 °C, 0 &lt; <em>S</em> &lt; 40, NBS scale, real estuarine seawater)</li>
+<li><code>10</code>: LDK00 (2 &lt; <em>T</em> &lt; 35 °C, 19 &lt; <em>S</em> &lt; 43, Total scale, real seawater) <strong>(default)</strong></li>
+<li><code>11</code>: MM02 (0 &lt; <em>T</em> &lt; 45 °C, 5 &lt; <em>S</em> &lt; 42, Seawater scale, real seawater)</li>
+<li><code>12</code>: MPL02 (−1.6 &lt; <em>T</em> &lt; 35 °C, 34 &lt; <em>S</em> &lt; 37, Seawater scale, field measurements)</li>
+<li><code>13</code>: MGH06 (0 &lt; <em>T</em> &lt; 50 °C, 1 &lt; <em>S</em> &lt; 50, Seawater scale, real seawater)</li>
+<li><code>14</code>: M10 (0 &lt; <em>T</em> &lt; 50 °C, 1 &lt; <em>S</em> &lt; 50, Seawater scale, real seawater)</li>
+<li><code>15</code>: WMW14 (0 &lt; <em>T</em> &lt; 45 °C, 0 &lt; <em>S</em> &lt; 45, Seawater scale, real seawater)</li>
+<li><code>16</code>: SLH20  (−1.67 &lt; <em>T</em> &lt; 31.80 °C, 30.73 &lt; <em>S</em> &lt; 37.57, Total scale, field measurements)</li>
+<li><code>17</code>: SB21 (15 &lt; <em>T</em> &lt; 35 °C, 19.6 &lt; <em>S</em> &lt; 41, Total scale, real seawater)</li>
+<li><code>18</code>: PLR18 (–6 &lt; <em>T</em> &lt; 25 °C, 33 &lt; <em>S</em> &lt; 100, Total scale, real seawater)</li>
+</ul>
+</li>
+</ul>
+<p>The brackets above show the valid temperature (<em>T</em>) and salinity (<em>S</em>) ranges, original pH scale, and type of material measured to derive each set of constants.</p>
+<ul>
+<li>
+<p><code>opt_k_HSO4</code>: PyCO2SYS option for bisulfate dissociation constant:</p>
+<ul>
+<li><code>1</code>: D90a <strong>(default)</strong></li>
+<li><code>2</code>: KRCB77</li>
+<li><code>3</code>: WM13/WMW14</li>
+</ul>
+</li>
+<li>
+<p><code>opt_total_borate</code>: PyCO2SYS option for borate:salinity relationship to use to estimate total borate:</p>
+<ul>
+<li><code>1</code>: U74 <strong>(default)</strong></li>
+<li><code>2</code>: LKB10</li>
+<li><code>3</code>: KSK18</li>
+</ul>
+</li>
+</ul>
+<h4 id="preformed-properties">Preformed Properties<a class="headerlink" href="#preformed-properties" title="Permanent link">&para;</a></h4>
+<p>These inputs are particularly useful for looped estimations, e.g. for successive re-estimation over time. As preformed properties are time-invariant, feeding <code>trace</code> the previously-estimated preformed properties for the same locations saves the vast majority of the run time. </p>
+<ul>
+<li>
+<p><code>preformed_p</code>: n by 1 array of preformed P. When given along with preformed_ta and preformed_si, neural network estimation will be skipped. The default is <code>None</code>.</p>
+</li>
+<li>
+<p><code>preformed_si</code>: n by 1 array of preformed Si. When given along with preformed_ta and preformed_p, neural network estimation will be skipped. The default is <code>None</code>.</p>
+</li>
+<li>
+<p><code>preformed_ta</code>: n by 1 array of preformed TA. When given along with preformed_p and preformed_si, neural network estimation will be skipped. The default is <code>None</code>.</p>
+</li>
+<li>
+<p><code>scale_factors</code>: n by 1 array of scale factors for the inverse gaussian parameterization. When given neural network estimation will be skipped. The default is <code>None</code>.</p>
+</li>
+</ul>
+<h4 id="miscellaneous">Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p><code>eos</code>: Choice of seawater equation of state to use for temperature, density, and depth conversions. Available choices are <code>seawater</code> (EOS-80) and <code>gsw</code> (TEOS-10). <code>seawater</code> will be deprecated, but is kept for compatibility with TRACEv1. The default is <code>seawater</code>.</p>
+</li>
+<li>
+<p><code>delta_over_gamma</code>: Ratio of second to first moments of inverse gaussian distribution used to convolute surface and interior histories of anthropogenic carbon. The default is <code>1.3038404810405297</code> to match TRACEv1 such that <code>pf=makedist(‘InverseGaussian’,‘mu’,1,‘lambda’,3.4)</code> is identical.</p>
+</li>
+<li>
+<p><code>meas_uncerts</code> : ArrayLike object of measurement uncertainties presented in order indicated by 'predictor_types'. Providing these estimates may alter estimated uncertainties. Measurement uncertainties are a small part of TRACE estimate uncertainties for WOCE-quality measurements. However, estimate uncertainty scales with measurement uncertainty, so it is recommended that measurement uncertainties be specified for sensor measurements. If this optional input argument is not provided, the default WOCE-quality uncertainty is assumed. If values provided then the uncertainty estimates are assumed to apply uniformly to all input parameter measurements. The default is <code>None</code>.</p>
+</li>
+<li>
+<p><code>per_kg_sw_tf</code> : Retained for future development (allowing for flexible units for currently-unsupported predictors). The default is <code>True</code>.</p>
+</li>
+<li>
+<p><code>error_codes</code> : List of error codes to be parsed as np.nan in input parameter arrays. The default is <code>[-999, -9, -1e20]</code>.</p>
+</li>
+</ul>
+</div>
+<h1 id="column-integration">Column Integration<a class="headerlink" href="#column-integration" title="Permanent link">&para;</a></h1>
+<p>A column integration function is available:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">tracepy</span><span class="w"> </span><span class="kn">import</span> <span class="n">column_integration</span>
+</code></pre></div>
+<p>This function integrates concentrations (e.g. anthropogenic carbon) for a single location between user-provided depths via Piecewise Cubic Hermite Interpolating Polynomial (<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.PchipInterpolator.html">PCHIP</a>) followed by <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.romb.html">Romberg</a> numerical integration. While this function only calculates a column inventory at a single location, it is designed to be looped to produce regional or global inventories. </p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../versions/" class="md-footer__link md-footer__link--next" aria-label="Next: Version history">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Version history
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 D.E. Sandborn (MIT License)
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.footer", "content.code.copy", "navigation.expand", "content.tooltips"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+      
+    
+  </body>
+</html>
