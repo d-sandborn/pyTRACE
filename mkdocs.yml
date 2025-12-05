@@ -1,0 +1,48 @@
+site_name: TRACE
+site_author: Daniel E. Sandborn
+site_description: Tracer-based Rapid Anthropogenic Carbon Estimation
+site_url: https://trace-python.readthedocs.io
+copyright: Copyright &copy; 2025 D.E. Sandborn (MIT)
+
+# Github repo info
+repo_name: d-sandborn/TRACE
+repo_url: https://github.com/d-sandborn/TRACE
+
+# Navigation
+nav:
+  - Overview: index.md
+  - How to use TRACE: trace_howto.md
+  - Version history: versions.md
+
+# Appearance
+theme:
+  name: material
+  language: en
+  palette:
+    scheme: default
+    primary: white
+    accent: deep orange
+  font:
+    text: Noto Sans
+    code: Noto Sans Mono
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.details
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
+  - footnotes
+  - pymdownx.inlinehilite
+  - pymdownx.arithmatex
+extra_javascript:
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
+extra_css:
+  - stylesheets/extra.css
+
+# Plugins
+plugins:
+  - search
