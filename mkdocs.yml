@@ -2,7 +2,7 @@ site_name: TRACE
 site_author: Daniel E. Sandborn
 site_description: Tracer-based Rapid Anthropogenic Carbon Estimation
 site_url: https://d-sandborn.io/TRACE
-copyright: Copyright &copy; 2025 D.E. Sandborn (MIT)
+copyright: Copyright &copy; 2025 D.E. Sandborn (MIT License)
 
 # Github repo info
 repo_name: d-sandborn/TRACE
