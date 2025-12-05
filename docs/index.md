@@ -19,19 +19,27 @@ TRACE will be made available via pip once its dependencies are all available the
 
 A paper describing TRACEv1 is freely available:
 
-!!! note "TRACEv1 manuscript" Carter, B. R., Schwinger, J., Sonnerup, R., Fassbender, A. J., Sharp, J. D., Dias, L. M., & Sandborn, D. E. (2025). Tracer-based rapid anthropogenic carbon estimation (TRACE). Earth System Science Data, 17(6), 3073–3088. https://doi.org/10.5194/essd-17-3073-2025
+!!! note "TRACEv1 manuscript" 
+
+    Carter, B. R., Schwinger, J., Sonnerup, R., Fassbender, A. J., Sharp, J. D., Dias, L. M., & Sandborn, D. E. (2025). Tracer-based rapid anthropogenic carbon estimation (TRACE). Earth System Science Data, 17(6), 3073–3088. https://doi.org/10.5194/essd-17-3073-2025
 
 To cite the original TRACEv1 software:
 
-!!! note "TRACEv1 software" Carter, B. R. (2025). BRCScienceProducts/TRACEv1: TRACEv1_publication. Zenodo. https://doi.org/10.5281/zenodo.15692788
+!!! note "TRACEv1 software" 
+
+    Carter, B. R. (2025). BRCScienceProducts/TRACEv1: TRACEv1_publication. Zenodo. https://doi.org/10.5281/zenodo.15692788
 
 To cite the Python implementation of TRACE:
 
-!!! note "TRACE-Python software" Sandborn, D. E., Barrett, R., & Carter, B. R. (2025). d-sandborn/TRACE: Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.17822675
+!!! note "TRACE-Python software" 
+
+    Sandborn, D. E., Barrett, R., & Carter, B. R. (2025). d-sandborn/TRACE: Tracer-based Rapid Anthropogenic Carbon Estimation (TRACE) (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.17822675
 
 A publication describing the Python implementation of TRACE is presently in review:
 
-!!! note "TRACE-Python manuscript" Sandborn, D.E., Carter, B. R., Warner, M. J., & Dias, L. M. TRACE-Python: Tracer-based Rapid Anthropogenic Carbon Estimation Implemented in Python (version 1.0). In review.
+!!! note "TRACE-Python manuscript" 
+
+    Sandborn, D.E., Carter, B. R., Warner, M. J., & Dias, L. M. TRACE-Python: Tracer-based Rapid Anthropogenic Carbon Estimation Implemented in Python (version 1.0). In review.
 
 ## Disclaimer
 
