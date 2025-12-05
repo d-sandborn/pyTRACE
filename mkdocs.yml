@@ -1,7 +1,7 @@
 site_name: TRACE
 site_author: Daniel E. Sandborn
 site_description: Tracer-based Rapid Anthropogenic Carbon Estimation
-site_url: https://trace-python.readthedocs.io
+site_url: https://d-sandborn.io/TRACE
 copyright: Copyright &copy; 2025 D.E. Sandborn (MIT)
 
 # Github repo info
@@ -19,12 +19,28 @@ theme:
   name: material
   language: en
   palette:
-    scheme: default
-    primary: white
-    accent: deep orange
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      primary: white
+      accent: deep orange
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+      primary: black
+      accent: orange
   font:
     text: Noto Sans
     code: Noto Sans Mono
+  features:
+    - navigation.footer
+    - content.code.copy
+    - navigation.expand
+    - content.tooltips
+  icon:
+    annotation: material/plus-circle
 
 # Extensions
 markdown_extensions:
